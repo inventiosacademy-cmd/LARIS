@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'home_page.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -42,12 +44,11 @@ class _LoginPageState extends State<LoginPage> {
       _isSubmitting = false;
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Login berhasil (demo)'),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    if (!mounted) return;
+
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
   }
 
   @override
