@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
+import 'login_page.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
@@ -50,7 +52,7 @@ class _SplashViewState extends State<SplashView> {
 
     _videoController.addListener(_handleVideoStatus);
 
-    Future.delayed(const Duration(seconds: 8), _navigateToHome);
+    Future.delayed(const Duration(seconds: 8), _navigateToLogin);
   }
 
   void _handleVideoStatus() {
@@ -58,16 +60,16 @@ class _SplashViewState extends State<SplashView> {
     final position = _videoController.value.position;
     final duration = _videoController.value.duration;
     if (position >= duration) {
-      _navigateToHome();
+      _navigateToLogin();
     }
   }
 
-  void _navigateToHome() {
+  void _navigateToLogin() {
     if (_hasNavigated || !mounted) return;
     _hasNavigated = true;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const MyHomePage(title: 'Beranda')),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const LoginPage()));
   }
 
   @override
