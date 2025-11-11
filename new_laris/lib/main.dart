@@ -1,10 +1,15 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
+import 'firebase_options.dart';
 import 'login_page.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -34,13 +39,22 @@ class SplashView extends StatefulWidget {
 class _SplashViewState extends State<SplashView> {
   late final VideoPlayerController _videoController;
   late final Future<void> _initializeVideo;
+  bool _videoInitializationFailed = false;
   bool _hasNavigated = false;
 
   @override
   void initState() {
     super.initState();
     _videoController = VideoPlayerController.asset('assets/splash.mp4');
-    _initializeVideo = _videoController.initialize().then((_) {
+    _initializeVideo = _initialiseVideoPlayer();
+    _videoController.addListener(_handleVideoStatus);
+
+    Future.delayed(const Duration(seconds: 8), _navigateToLogin);
+  }
+
+  Future<void> _initialiseVideoPlayer() async {
+    try {
+      await _videoController.initialize();
       if (!mounted) return;
       setState(() {});
       _videoController
@@ -48,11 +62,13 @@ class _SplashViewState extends State<SplashView> {
         ..setVolume(0.0)
         ..setPlaybackSpeed(1.5)
         ..play();
-    });
-
-    _videoController.addListener(_handleVideoStatus);
-
-    Future.delayed(const Duration(seconds: 8), _navigateToLogin);
+    } catch (error) {
+      _videoInitializationFailed = true;
+      debugPrint('Splash video failed to load: $error');
+      if (mounted) {
+        setState(() {});
+      }
+    }
   }
 
   void _handleVideoStatus() {
@@ -67,9 +83,9 @@ class _SplashViewState extends State<SplashView> {
   void _navigateToLogin() {
     if (_hasNavigated || !mounted) return;
     _hasNavigated = true;
-    Navigator.of(
-      context,
-    ).pushReplacement(MaterialPageRoute(builder: (_) => const LoginPage()));
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const LoginPage()),
+    );
   }
 
   @override
@@ -88,15 +104,24 @@ class _SplashViewState extends State<SplashView> {
         future: _initializeVideo,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return const Center(child: CircularProgressIndicator());
+            return _SplashFallback(
+              isLoading: false,
+              message: 'Tidak dapat memutar animasi awal.',
+            );
           }
 
           if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
+            return const _SplashFallback(isLoading: true);
           }
 
           if (!_videoController.value.isInitialized) {
-            return const Center(child: CircularProgressIndicator());
+            if (_videoInitializationFailed) {
+              return const _SplashFallback(
+                isLoading: false,
+                message: 'Video splash tidak tersedia.',
+              );
+            }
+            return const _SplashFallback(isLoading: true);
           }
 
           return Align(
@@ -110,6 +135,50 @@ class _SplashViewState extends State<SplashView> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _SplashFallback extends StatelessWidget {
+  const _SplashFallback({
+    required this.isLoading,
+    this.message,
+  });
+
+  final bool isLoading;
+  final String? message;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (isLoading)
+            const SizedBox(
+              height: 48,
+              width: 48,
+              child: CircularProgressIndicator(color: Colors.white),
+            )
+          else
+            const Icon(
+              Icons.videocam_off_outlined,
+              size: 48,
+              color: Colors.white,
+            ),
+          const SizedBox(height: 16),
+          Text(
+            isLoading ? 'Memuat...' : (message ?? 'Sedang menyiapkan aplikasi.'),
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }
