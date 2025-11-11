@@ -1,25 +1,25 @@
 import 'dart:ui';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'register_page.dart';
-import 'services/auth_service.dart';
+import 'login_page.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _authService = AuthService(FirebaseAuth.instance);
-  bool _obscurePassword = true;
+  final _confirmPasswordController = TextEditingController();
   bool _isSubmitting = false;
-  bool _isGoogleSigningIn = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   String? _authError;
 
   Color get _primaryColor => const Color(0xFF38B6FF);
@@ -28,12 +28,19 @@ class _LoginPageState extends State<LoginPage> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
   void _togglePasswordVisibility() {
     setState(() {
       _obscurePassword = !_obscurePassword;
+    });
+  }
+
+  void _toggleConfirmPasswordVisibility() {
+    setState(() {
+      _obscureConfirmPassword = !_obscureConfirmPassword;
     });
   }
 
@@ -51,26 +58,26 @@ class _LoginPageState extends State<LoginPage> {
     String? authErrorMessage;
 
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Berhasil masuk.')));
-      // TODO(pav): arahkan ke beranda setelah halaman tersedia.
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Registrasi berhasil. Silakan masuk.')),
+      );
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const LoginPage()),
+      );
     } on FirebaseAuthException catch (error) {
       authErrorMessage = switch (error.code) {
+        'weak-password' => 'Kata sandi terlalu lemah.',
+        'email-already-in-use' => 'Email sudah digunakan.',
         'invalid-email' => 'Format email tidak valid.',
-        'user-disabled' => 'Akun Anda dinonaktifkan. Hubungi admin.',
-        'user-not-found' => 'Email tidak terdaftar.',
-        'wrong-password' => 'Kata sandi salah.',
-        'too-many-requests' => 'Terlalu banyak percobaan. Coba lagi nanti.',
-        _ => 'Gagal masuk (${error.code}).',
+        _ => 'Gagal daftar (${error.code}).',
       };
-    } catch (error) {
+    } catch (_) {
       authErrorMessage = 'Terjadi kesalahan tak terduga. Silakan coba lagi.';
     } finally {
       if (mounted) {
@@ -82,41 +89,34 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> _signInWithGoogle() async {
-    if (_isGoogleSigningIn) return;
-
-    FocusScope.of(context).unfocus();
-    setState(() {
-      _isGoogleSigningIn = true;
-      _authError = null;
-    });
-
-    String? authErrorMessage;
-
-    try {
-      await _authService.signInWithGoogle();
-
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Masuk dengan Google berhasil.')),
-      );
-      // TODO(pav): arahkan ke beranda setelah halaman tersedia.
-    } on FirebaseAuthException catch (error) {
-      authErrorMessage = switch (error.code) {
-        'aborted-by-user' => 'Login Google dibatalkan.',
-        'network-request-failed' => 'Jaringan bermasalah. Coba lagi.',
-        _ => 'Masuk Google gagal (${error.code}).',
-      };
-    } catch (error) {
-      authErrorMessage = 'Masuk Google gagal. Silakan coba lagi.';
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isGoogleSigningIn = false;
-          _authError = authErrorMessage;
-        });
-      }
+  String? _validateEmail(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Email wajib diisi.';
     }
+    if (!RegExp(r'^.+@.+\..+$').hasMatch(value.trim())) {
+      return 'Format email tidak valid.';
+    }
+    return null;
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Kata sandi wajib diisi.';
+    }
+    if (value.length < 6) {
+      return 'Minimal 6 karakter.';
+    }
+    return null;
+  }
+
+  String? _validateConfirmPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Konfirmasi kata sandi wajib diisi.';
+    }
+    if (value != _passwordController.text) {
+      return 'Kata sandi tidak cocok.';
+    }
+    return null;
   }
 
   @override
@@ -138,10 +138,8 @@ class _LoginPageState extends State<LoginPage> {
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 32,
-                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -159,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Masuk ke LARIS',
+                      'Daftar akun baru',
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: _primaryColor,
@@ -167,10 +165,10 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Selamat datang kembali! Silakan masuk untuk melanjutkan.',
+                      'Masukkan email dan buat kata sandi untuk memulai.',
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
+                        color: Colors.black54,
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -178,99 +176,59 @@ class _LoginPageState extends State<LoginPage> {
                       child: Form(
                         key: _formKey,
                         child: Column(
-                          mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Text(
-                              'Email',
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: _primaryColor,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
                             TextFormField(
                               controller: _emailController,
+                              decoration: const InputDecoration(
+                                labelText: 'Email',
+                                prefixIcon: Icon(Icons.email_outlined),
+                              ),
                               keyboardType: TextInputType.emailAddress,
-                              decoration: InputDecoration(
-                                hintText: 'nama@example.com',
-                                prefixIcon: Icon(
-                                  Icons.email_outlined,
-                                  color: _primaryColor,
-                                ),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.trim().isEmpty) {
-                                  return 'Email wajib diisi';
-                                }
-                                final emailPattern = RegExp(
-                                  r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
-                                );
-                                if (!emailPattern.hasMatch(value.trim())) {
-                                  return 'Format email tidak valid';
-                                }
-                                return null;
-                              },
+                              validator: _validateEmail,
                             ),
-                            const SizedBox(height: 20),
-                            Text(
-                              'Kata Sandi',
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: _primaryColor,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 16),
                             TextFormField(
                               controller: _passwordController,
-                              obscureText: _obscurePassword,
                               decoration: InputDecoration(
-                                hintText: 'Minimal 6 karakter',
-                                prefixIcon: Icon(
-                                  Icons.lock_outline,
-                                  color: _primaryColor,
-                                ),
+                                labelText: 'Kata sandi',
+                                prefixIcon: const Icon(Icons.lock_outline),
                                 suffixIcon: IconButton(
                                   onPressed: _togglePasswordVisibility,
-                                  icon: Icon(
-                                    _obscurePassword
-                                        ? Icons.visibility_off_outlined
-                                        : Icons.visibility_outlined,
-                                  ),
+                                  icon: Icon(_obscurePassword
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined),
                                 ),
                               ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Kata sandi wajib diisi';
-                                }
-                                if (value.length < 6) {
-                                  return 'Minimal 6 karakter';
-                                }
-                                return null;
-                              },
+                              obscureText: _obscurePassword,
+                              validator: _validatePassword,
                             ),
-                            const SizedBox(height: 12),
-                            if (_authError != null) ...[
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: _confirmPasswordController,
+                              decoration: InputDecoration(
+                                labelText: 'Konfirmasi kata sandi',
+                                prefixIcon: const Icon(Icons.lock_outline),
+                                suffixIcon: IconButton(
+                                  onPressed: _toggleConfirmPasswordVisibility,
+                                  icon: Icon(_obscureConfirmPassword
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined),
+                                ),
+                              ),
+                              obscureText: _obscureConfirmPassword,
+                              validator: _validateConfirmPassword,
+                            ),
+                            const SizedBox(height: 16),
+                            if (_authError != null)
                               Text(
                                 _authError!,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.error,
+                                style: const TextStyle(
+                                  color: Colors.redAccent,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              const SizedBox(height: 12),
-                            ],
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                onPressed: () {},
-                                style: TextButton.styleFrom(
-                                  foregroundColor: _primaryColor,
-                                ),
-                                child: const Text('Lupa kata sandi?'),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
+                            const SizedBox(height: 24),
                             FilledButton(
                               onPressed: _isSubmitting ? null : _submit,
                               style: FilledButton.styleFrom(
@@ -290,36 +248,7 @@ class _LoginPageState extends State<LoginPage> {
                                         ),
                                       ),
                                     )
-                                  : const Text('Masuk'),
-                            ),
-                            const SizedBox(height: 16),
-                            OutlinedButton.icon(
-                              onPressed: _isGoogleSigningIn
-                                  ? null
-                                  : _signInWithGoogle,
-                              style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 14,
-                                ),
-                                side: BorderSide(
-                                  color: _primaryColor.withValues(alpha: 0.4),
-                                ),
-                                foregroundColor: _primaryColor,
-                              ),
-                              icon: _isGoogleSigningIn
-                                  ? const SizedBox(
-                                      height: 18,
-                                      width: 18,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : const Icon(Icons.g_mobiledata, size: 28),
-                              label: Text(
-                                _isGoogleSigningIn
-                                    ? 'Menghubungkan...'
-                                    : 'Masuk dengan Google',
-                              ),
+                                  : const Text('Daftar'),
                             ),
                             const SizedBox(height: 16),
                             OutlinedButton(
@@ -328,7 +257,7 @@ class _LoginPageState extends State<LoginPage> {
                                   : () {
                                       Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
-                                          builder: (_) => const RegisterPage(),
+                                          builder: (_) => const LoginPage(),
                                         ),
                                       );
                                     },
@@ -339,7 +268,7 @@ class _LoginPageState extends State<LoginPage> {
                                 side: BorderSide(color: _primaryColor),
                                 foregroundColor: _primaryColor,
                               ),
-                              child: const Text('Daftar akun baru'),
+                              child: const Text('Sudah punya akun? Masuk'),
                             ),
                           ],
                         ),
@@ -357,7 +286,10 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 class _DecorCircle extends StatelessWidget {
-  const _DecorCircle({required this.alignment, required this.offset});
+  const _DecorCircle({
+    required this.alignment,
+    required this.offset,
+  });
 
   final Alignment alignment;
   final Offset offset;
@@ -409,7 +341,9 @@ class _FrostedCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.6),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.4),
+            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.08),
