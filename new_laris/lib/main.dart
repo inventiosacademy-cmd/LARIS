@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       title: 'LARIS AI',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF38B6FF)),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0053FF)),
       ),
       home: const SplashView(),
     );
@@ -41,6 +41,8 @@ class _SplashViewState extends State<SplashView> {
   late final Future<void> _initializeVideo;
   bool _videoInitializationFailed = false;
   bool _hasNavigated = false;
+  static const _splashStartColor = Color(0xFF38B6FF);
+  static const _splashEndColor = Color(0xFF6FD1FF);
 
   @override
   void initState() {
@@ -99,42 +101,50 @@ class _SplashViewState extends State<SplashView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF38B6FF),
-      body: FutureBuilder<void>(
-        future: _initializeVideo,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return _SplashFallback(
-              isLoading: false,
-              message: 'Tidak dapat memutar animasi awal.',
-            );
-          }
-
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const _SplashFallback(isLoading: true);
-          }
-
-          if (!_videoController.value.isInitialized) {
-            if (_videoInitializationFailed) {
-              return const _SplashFallback(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [_splashStartColor, _splashEndColor],
+          ),
+        ),
+        child: FutureBuilder<void>(
+          future: _initializeVideo,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return _SplashFallback(
                 isLoading: false,
-                message: 'Video splash tidak tersedia.',
+                message: 'Tidak dapat memutar animasi awal.',
               );
             }
-            return const _SplashFallback(isLoading: true);
-          }
 
-          return Align(
-            alignment: const Alignment(-0.2, 0.0),
-            child: SizedBox(
-              width: 260,
-              child: AspectRatio(
-                aspectRatio: _videoController.value.aspectRatio,
-                child: VideoPlayer(_videoController),
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const _SplashFallback(isLoading: true);
+            }
+
+            if (!_videoController.value.isInitialized) {
+              if (_videoInitializationFailed) {
+                return const _SplashFallback(
+                  isLoading: false,
+                  message: 'Video splash tidak tersedia.',
+                );
+              }
+              return const _SplashFallback(isLoading: true);
+            }
+
+            return Align(
+              alignment: const Alignment(-0.2, 0.0),
+              child: SizedBox(
+                width: 260,
+                child: AspectRatio(
+                  aspectRatio: _videoController.value.aspectRatio,
+                  child: VideoPlayer(_videoController),
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
