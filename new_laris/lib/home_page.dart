@@ -1,40 +1,48 @@
 import 'package:flutter/material.dart';
 
+import 'template_social_media.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   static const List<_FeatureItem> _featureItems = [
     _FeatureItem(
+      id: 'template',
       title: 'Template\nSosial Media',
       icon: Icons.grid_view_rounded,
       backgroundColor: Color(0xFFFFF3F6),
       iconColor: Color(0xFFFF6B8A),
     ),
     _FeatureItem(
+      id: 'hpp',
       title: 'HPP',
       icon: Icons.insert_chart_outlined_rounded,
       backgroundColor: Color(0xFFEFF5FF),
       iconColor: Color(0xFF2E64FF),
     ),
     _FeatureItem(
+      id: 'konsultan',
       title: 'Konsultan AI',
       icon: Icons.psychology_alt_outlined,
       backgroundColor: Color(0xFFEFFBF4),
       iconColor: Color(0xFF00A56F),
     ),
     _FeatureItem(
+      id: 'logo',
       title: 'Logo Branding',
       icon: Icons.brush_outlined,
       backgroundColor: Color(0xFFFFF4E6),
       iconColor: Color(0xFFFF8A00),
     ),
     _FeatureItem(
+      id: 'copywriting',
       title: 'Copywriting',
       icon: Icons.edit_outlined,
       backgroundColor: Color(0xFFEFF1FF),
       iconColor: Color(0xFF4A57FF),
     ),
     _FeatureItem(
+      id: 'pitch',
       title: 'Pitch Deck',
       icon: Icons.slideshow_outlined,
       backgroundColor: Color(0xFFF4ECFF),
@@ -134,7 +142,11 @@ class HomePage extends StatelessWidget {
                   childAspectRatio: 0.9,
                 ),
                 itemBuilder: (context, index) {
-                  return _FeatureButton(item: _featureItems[index]);
+                  final item = _featureItems[index];
+                  return _FeatureButton(
+                    item: item,
+                    onTap: () => _handleFeatureTap(context, item),
+                  );
                 },
               ),
               const SizedBox(height: 32),
@@ -157,6 +169,22 @@ class HomePage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _handleFeatureTap(BuildContext context, _FeatureItem item) {
+    switch (item.id) {
+      case 'template':
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => const TemplateSocialMediaPage(),
+          ),
+        );
+        break;
+      default:
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${item.title} segera hadir!')),
+        );
+    }
   }
 }
 
@@ -194,48 +222,56 @@ class _SearchField extends StatelessWidget {
 }
 
 class _FeatureButton extends StatelessWidget {
-  const _FeatureButton({required this.item});
+  const _FeatureButton({required this.item, this.onTap});
 
   final _FeatureItem item;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
         borderRadius: BorderRadius.circular(22),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
+        onTap: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(22),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
-        ],
-      ),
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            height: 48,
-            width: 48,
-            decoration: BoxDecoration(
-              color: item.backgroundColor,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(item.icon, color: item.iconColor, size: 26),
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                height: 48,
+                width: 48,
+                decoration: BoxDecoration(
+                  color: item.backgroundColor,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(item.icon, color: item.iconColor, size: 26),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                item.title,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF1F2637),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 10),
-          Text(
-            item.title,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: const Color(0xFF1F2637),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -376,12 +412,14 @@ class _CircleIconButton extends StatelessWidget {
 }
 
 class _FeatureItem {
+  final String id;
   final String title;
   final IconData icon;
   final Color backgroundColor;
   final Color iconColor;
 
   const _FeatureItem({
+    required this.id,
     required this.title,
     required this.icon,
     required this.backgroundColor,
