@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'home_page.dart';
 import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -57,7 +58,10 @@ class _LoginPageState extends State<LoginPage> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Berhasil masuk.')));
-      // TODO(pav): arahkan ke beranda setelah halaman tersedia.
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const HomePage()),
+        (route) => false,
+      );
     } on FirebaseAuthException catch (error) {
       authErrorMessage = switch (error.code) {
         'invalid-email' => 'Format email tidak valid.',
