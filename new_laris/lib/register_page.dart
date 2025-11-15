@@ -65,9 +65,9 @@ class _RegisterPageState extends State<RegisterPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Registrasi berhasil. Silakan masuk.')),
       );
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const LoginPage()),
-      );
+      Navigator.of(
+        context,
+      ).pushReplacement(MaterialPageRoute(builder: (_) => const LoginPage()));
     } on FirebaseAuthException catch (error) {
       authErrorMessage = switch (error.code) {
         'weak-password' => 'Kata sandi terlalu lemah.',
@@ -98,14 +98,14 @@ class _RegisterPageState extends State<RegisterPage> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 480),
+              constraints: const BoxConstraints(maxWidth: 520),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const _AuthIllustration(
                     title: 'Daftar',
                     subtitle: 'Buat akun baru untuk mulai menggunakan LARIS.',
-                    icon: Icons.person_add_alt_1_outlined,
+                    assetPath: 'assets/asset_login.png',
                   ),
                   const SizedBox(height: 24),
                   Form(
@@ -133,8 +133,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             if (value == null || value.trim().isEmpty) {
                               return 'Email wajib diisi';
                             }
-                            final emailPattern =
-                                RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+                            final emailPattern = RegExp(
+                              r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
+                            );
                             if (!emailPattern.hasMatch(value.trim())) {
                               return 'Format email tidak valid';
                             }
@@ -216,8 +217,9 @@ class _RegisterPageState extends State<RegisterPage> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color:
-                                  Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.error.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Text(
@@ -248,13 +250,16 @@ class _RegisterPageState extends State<RegisterPage> {
                                     height: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor:
-                                          AlwaysStoppedAnimation(Colors.white),
+                                      valueColor: AlwaysStoppedAnimation(
+                                        Colors.white,
+                                      ),
                                     ),
                                   )
                                 : const Text(
                                     'Daftar',
-                                    style: TextStyle(fontWeight: FontWeight.w600),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                           ),
                         ),
@@ -297,12 +302,12 @@ class _AuthIllustration extends StatelessWidget {
   const _AuthIllustration({
     required this.title,
     required this.subtitle,
-    required this.icon,
+    required this.assetPath,
   });
 
   final String title;
   final String subtitle;
-  final IconData icon;
+  final String assetPath;
 
   @override
   Widget build(BuildContext context) {
@@ -311,59 +316,22 @@ class _AuthIllustration extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Container(
-          height: 200,
-          decoration: BoxDecoration(
-            color: const Color(0xFFEFF3FB),
-            borderRadius: BorderRadius.circular(32),
-          ),
-          child: Stack(
-            children: [
-              Align(
-                alignment: const Alignment(-0.7, -0.8),
-                child: Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 10,
-                      ),
-                    ],
-                  ),
-                ),
+        Transform.translate(
+          offset: const Offset(0, -12),
+          child: SizedBox(
+            height: 350,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(32),
+              child: Image.asset(
+                assetPath,
+                width: double.infinity,
+                fit: BoxFit.contain,
+                alignment: Alignment.center,
               ),
-              Align(
-                alignment: const Alignment(0.7, -0.2),
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: 8,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Center(
-                child: Icon(
-                  icon,
-                  size: 96,
-                  color: const Color(0xFF0053FF),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 12),
         Text(
           title,
           style: textTheme.headlineSmall?.copyWith(
@@ -375,9 +343,7 @@ class _AuthIllustration extends StatelessWidget {
         Text(
           subtitle,
           textAlign: TextAlign.center,
-          style: textTheme.bodyMedium?.copyWith(
-            color: Colors.black54,
-          ),
+          style: textTheme.bodyMedium?.copyWith(color: Colors.black54),
         ),
       ],
     );
