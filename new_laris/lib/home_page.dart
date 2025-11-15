@@ -82,30 +82,26 @@ class HomePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                children: const [
-                  _CircleIconButton(icon: Icons.menu_rounded),
-                  Spacer(),
-                  _CircleIconButton(icon: Icons.notifications_none_rounded),
-                  SizedBox(width: 12),
-                  CircleAvatar(
+                children: [
+                  const CircleAvatar(
                     radius: 22,
                     backgroundColor: Color(0xFFFFE6EC),
                     child: Icon(
                       Icons.person,
                       color: Color(0xFFFF5C8A),
                     ),
-                  )
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Nessa',
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF1C2033),
+                    ),
+                  ),
                 ],
               ),
-              const SizedBox(height: 24),
-              Text(
-                'Hello Nessa',
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF1C2033),
-                ),
-              ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 16),
               Text(
                 'Apa yang kamu butuhkan untuk brand kamu hari ini?',
                 style: theme.textTheme.bodyMedium?.copyWith(
@@ -345,32 +341,6 @@ class _EventCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _CircleIconButton extends StatelessWidget {
-  const _CircleIconButton({required this.icon});
-
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 44,
-      width: 44,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Icon(icon, color: const Color(0xFF1C2033)),
     );
   }
 }

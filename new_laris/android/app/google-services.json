@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "659142019462",
+    "firebase_url": "https://buku-interaktif-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "buku-interaktif",
+    "storage_bucket": "buku-interaktif.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:659142019462:android:61659a632631e2d481c407",
+        "android_client_info": {
+          "package_name": "com.example.new_laris"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "659142019462-a53rgvjt9mlnu53a1nfcossi9qfpn60a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.new_laris",
+            "certificate_hash": "d8066ab7dbbf447153a9864c8180e900218c1ded"
+          }
+        },
+        {
+          "client_id": "659142019462-cmdhfchvgss5pk6k12aabfknia6n78f6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQuWA0BTa5RXnvCUPGrUhNt2u5h5qMD18"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "659142019462-cmdhfchvgss5pk6k12aabfknia6n78f6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "659142019462-1m3pbgvu2m5q1arfeemfolbs7jmethq3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.rast"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

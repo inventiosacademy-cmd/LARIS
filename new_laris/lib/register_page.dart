@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import 'home_page.dart';
 import 'login_page.dart';
@@ -16,9 +18,11 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _googleSignIn = GoogleSignIn();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isSubmitting = false;
+  bool _isGoogleSubmitting = false;
   String? _authError;
 
   Color get _primaryColor => const Color(0xFF0053FF);
@@ -89,9 +93,64 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
+  Future<void> _signInWithGoogle() async {
+    if (_isGoogleSubmitting) return;
+
+    setState(() {
+      _isGoogleSubmitting = true;
+      _authError = null;
+    });
+
+    try {
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        if (mounted) {
+          setState(() {
+            _isGoogleSubmitting = false;
+          });
+        }
+        return;
+      }
+
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Berhasil masuk dengan Google.')),
+      );
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const HomePage()),
+        (route) => false,
+      );
+    } on FirebaseAuthException catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _authError = 'Google sign-in gagal (${error.message ?? error.code}).';
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _authError = 'Tidak dapat masuk dengan Google. Coba lagi.';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isGoogleSubmitting = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -104,12 +163,12 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const _AuthIllustration(
+                  _AuthIllustration(
                     title: 'Daftar',
                     subtitle: 'Buat akun baru untuk mulai menggunakan LARIS.',
                     assetPath: 'assets/asset_login.png',
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: isKeyboardVisible ? 12 : 24),
                   Form(
                     key: _formKey,
                     child: Column(
@@ -266,6 +325,16 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         ),
                         const SizedBox(height: 16),
+                        const _SocialDivider(),
+                        const SizedBox(height: 12),
+                        _SocialButtons(
+                          onGoogleTap: _isSubmitting || _isGoogleSubmitting
+                              ? null
+                              : _signInWithGoogle,
+                          onFacebookTap: null,
+                          isGoogleLoading: _isGoogleSubmitting,
+                        ),
+                        const SizedBox(height: 16),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -314,14 +383,20 @@ class _AuthIllustration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
+    final imageHeight = isKeyboardVisible ? 160.0 : 300.0;
+    final imageOffset = isKeyboardVisible ? -4.0 : -12.0;
+    final spacing = isKeyboardVisible ? 8.0 : 12.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Transform.translate(
-          offset: const Offset(0, -12),
-          child: SizedBox(
-            height: 350,
+          offset: Offset(0, imageOffset),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOut,
+            height: imageHeight,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(32),
               child: Image.asset(
@@ -333,7 +408,7 @@ class _AuthIllustration extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: spacing),
         Text(
           title,
           style: textTheme.headlineSmall?.copyWith(
@@ -348,6 +423,123 @@ class _AuthIllustration extends StatelessWidget {
           style: textTheme.bodyMedium?.copyWith(color: Colors.black54),
         ),
       ],
+    );
+  }
+}
+
+class _SocialDivider extends StatelessWidget {
+  const _SocialDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Colors.black.withOpacity(0.15);
+    return Row(
+      children: [
+        Expanded(child: Divider(color: color, thickness: 1)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Text(
+            'atau daftar dengan',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Colors.black54,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        Expanded(child: Divider(color: color, thickness: 1)),
+      ],
+    );
+  }
+}
+
+class _SocialButtons extends StatelessWidget {
+  const _SocialButtons({
+    required this.onGoogleTap,
+    required this.onFacebookTap,
+    this.isGoogleLoading = false,
+    this.isFacebookLoading = false,
+  });
+
+  final VoidCallback? onGoogleTap;
+  final VoidCallback? onFacebookTap;
+  final bool isGoogleLoading;
+  final bool isFacebookLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _SocialButton(
+            icon: FontAwesomeIcons.google,
+            label: 'Google',
+            color: const Color(0xFF1877F2),
+            onPressed: onGoogleTap,
+            isLoading: isGoogleLoading,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _SocialButton(
+            icon: FontAwesomeIcons.facebookF,
+            label: 'Facebook',
+            color: const Color(0xFF1877F2),
+            onPressed: onFacebookTap,
+            isLoading: isFacebookLoading,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SocialButton extends StatelessWidget {
+  const _SocialButton({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onPressed,
+    this.isLoading = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    final effectiveOnPressed = isLoading ? null : onPressed;
+
+    return OutlinedButton(
+      onPressed: effectiveOnPressed,
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        side: BorderSide(color: color.withOpacity(0.5)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+      ),
+      child: isLoading
+          ? SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation(color),
+              ),
+            )
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FaIcon(icon, color: color, size: 18),
+                const SizedBox(width: 8),
+                Text(
+                  label,
+                  style: TextStyle(color: color, fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
     );
   }
 }
