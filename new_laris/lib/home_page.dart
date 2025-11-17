@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'app_colors.dart';
 import 'template_social_media.dart';
 
 class HomePage extends StatelessWidget {
@@ -10,43 +11,43 @@ class HomePage extends StatelessWidget {
       id: 'template',
       title: 'Template\nSosial Media',
       icon: Icons.grid_view_rounded,
-      backgroundColor: Color(0xFFFFF3F6),
-      iconColor: Color(0xFFFF6B8A),
+      backgroundColor: AppColors.primary10,
+      iconColor: AppColors.primary,
     ),
     _FeatureItem(
       id: 'hpp',
       title: 'HPP',
       icon: Icons.insert_chart_outlined_rounded,
-      backgroundColor: Color(0xFFEFF5FF),
-      iconColor: Color(0xFF2E64FF),
+      backgroundColor: AppColors.primary05,
+      iconColor: AppColors.primary,
     ),
     _FeatureItem(
       id: 'konsultan',
       title: 'Konsultan AI',
       icon: Icons.psychology_alt_outlined,
-      backgroundColor: Color(0xFFEFFBF4),
-      iconColor: Color(0xFF00A56F),
+      backgroundColor: AppColors.primary20,
+      iconColor: AppColors.primary,
     ),
     _FeatureItem(
       id: 'logo',
       title: 'Logo Branding',
       icon: Icons.brush_outlined,
-      backgroundColor: Color(0xFFFFF4E6),
-      iconColor: Color(0xFFFF8A00),
+      backgroundColor: AppColors.primary05,
+      iconColor: AppColors.primary,
     ),
     _FeatureItem(
       id: 'copywriting',
       title: 'Copywriting',
       icon: Icons.edit_outlined,
-      backgroundColor: Color(0xFFEFF1FF),
-      iconColor: Color(0xFF4A57FF),
+      backgroundColor: AppColors.primary10,
+      iconColor: AppColors.primary,
     ),
     _FeatureItem(
       id: 'pitch',
       title: 'Pitch Deck',
       icon: Icons.slideshow_outlined,
-      backgroundColor: Color(0xFFF4ECFF),
-      iconColor: Color(0xFF8257FF),
+      backgroundColor: AppColors.primary05,
+      iconColor: AppColors.primary,
     ),
   ];
 
@@ -57,10 +58,10 @@ class HomePage extends StatelessWidget {
       date: '12 Des 2025 - 09.00 WIB',
       location: 'Jakarta Creative Hub',
       gradient: [
-        Color(0xFF5364FF),
-        Color(0xFF6D8BFF),
+        AppColors.primary,
+        AppColors.primary80,
       ],
-      accent: Color(0xFF3A4CFF),
+      accent: AppColors.primary,
       textColor: Colors.white,
     ),
     _EventInfo(
@@ -69,10 +70,10 @@ class HomePage extends StatelessWidget {
       date: '19 Des 2025 - 13.00 WIB',
       location: 'Bandung Workspace',
       gradient: [
-        Color(0xFFFF8FB1),
-        Color(0xFFFFB37D),
+        AppColors.primary,
+        AppColors.primary60,
       ],
-      accent: Color(0xFFEE5C87),
+      accent: AppColors.primary,
       textColor: Colors.white,
     ),
   ];
@@ -82,7 +83,7 @@ class HomePage extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
+      backgroundColor: AppColors.primary05,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -93,10 +94,10 @@ class HomePage extends StatelessWidget {
                 children: [
                   const CircleAvatar(
                     radius: 22,
-                    backgroundColor: Color(0xFFFFE6EC),
+                    backgroundColor: AppColors.primary10,
                     child: Icon(
                       Icons.person,
-                      color: Color(0xFFFF5C8A),
+                      color: AppColors.primary,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -104,7 +105,7 @@ class HomePage extends StatelessWidget {
                     'Nessa',
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: const Color(0xFF1C2033),
+                      color: AppColors.primary,
                     ),
                   ),
                 ],
@@ -113,7 +114,7 @@ class HomePage extends StatelessWidget {
               Text(
                 'Apa yang kamu butuhkan untuk brand kamu hari ini?',
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: const Color(0xFF6E7384),
+                  color: AppColors.primary60,
                 ),
               ),
               const SizedBox(height: 24),
@@ -123,7 +124,7 @@ class HomePage extends StatelessWidget {
                 'Layanan Kreatif',
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: const Color(0xFF1C2033),
+                  color: AppColors.primary,
                 ),
               ),
               const SizedBox(height: 16),
@@ -150,7 +151,7 @@ class HomePage extends StatelessWidget {
                 'Event Acara',
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: const Color(0xFF1C2033),
+                  color: AppColors.primary,
                 ),
               ),
               const SizedBox(height: 16),
@@ -205,10 +206,12 @@ class _SearchField extends StatelessWidget {
         decoration: InputDecoration(
           hintText: 'Cari layanan kreatif ...',
           hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: const Color(0xFFB0B4C1),
+                color: AppColors.primary40,
               ),
-          prefixIcon:
-              const Icon(Icons.search_rounded, color: Color(0xFF9095A5)),
+          prefixIcon: const Icon(
+            Icons.search_rounded,
+            color: AppColors.primary60,
+          ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 16),
         ),
@@ -262,7 +265,7 @@ class _FeatureButton extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF1F2637),
+                  color: AppColors.primary,
                 ),
               ),
             ],

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'app_colors.dart';
+
 class TemplateSocialMediaPage extends StatefulWidget {
   const TemplateSocialMediaPage({super.key});
 
@@ -41,7 +43,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FB),
+      backgroundColor: AppColors.primary05,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -54,7 +56,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
           'Template Sosial Media',
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w700,
-            color: const Color(0xFF1B1F3B),
+            color: AppColors.primary,
           ),
         ),
       ),
@@ -104,23 +106,26 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(22),
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: const Color(0xFFF4F6FB),
-                borderRadius: BorderRadius.circular(22),
-                border: Border.all(color: const Color(0xFFE1E5F0)),
-              ),
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: AppColors.primary05,
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(color: AppColors.primary20),
+                ),
               height: 200,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
-                  Icon(Icons.image_outlined,
-                      size: 62, color: Color(0xFFB3B9C9)),
+                  Icon(
+                    Icons.image_outlined,
+                    size: 62,
+                    color: AppColors.primary40,
+                  ),
                   SizedBox(height: 10),
                   Text(
                     'Belum ada gambar',
-                    style: TextStyle(color: Color(0xFF7A8195)),
+                    style: TextStyle(color: AppColors.primary60),
                   ),
                 ],
               ),
@@ -130,7 +135,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
           FilledButton(
             onPressed: () => _showSnack('Fitur percantik gambar segera hadir'),
             style: FilledButton.styleFrom(
-              backgroundColor: const Color(0xFF1C64FF),
+              backgroundColor: AppColors.primary,
               minimumSize: const Size.fromHeight(48),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
@@ -152,8 +157,8 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
             onPressed: () => _showSnack('Tidak ada gambar untuk diunduh'),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size.fromHeight(48),
-              foregroundColor: const Color(0xFF1C64FF),
-              side: const BorderSide(color: Color(0xFFB8C4FF), width: 1.2),
+              foregroundColor: AppColors.primary,
+              side: const BorderSide(color: AppColors.primary20, width: 1.2),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
               ),
@@ -189,7 +194,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
             'Copywriting untuk platform apa?',
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
-              color: const Color(0xFF22263F),
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 12),
@@ -206,14 +211,14 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
                         _selectedPlatform = platform;
                       });
                     },
-                    selectedColor: const Color(0xFF1C64FF),
+                    selectedColor: AppColors.primary,
                     labelStyle: TextStyle(
                       color: _selectedPlatform == platform
                           ? Colors.white
-                          : const Color(0xFF5A607B),
+                          : AppColors.primary60,
                       fontWeight: FontWeight.w600,
                     ),
-                    backgroundColor: const Color(0xFFF4F6FB),
+                    backgroundColor: AppColors.primary05,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -227,11 +232,11 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
             maxLines: 6,
             decoration: InputDecoration(
               filled: true,
-              fillColor: const Color(0xFFF9FAFC),
+              fillColor: AppColors.primary05,
               alignLabelWithHint: true,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: Color(0xFFE1E5F0)),
+                borderSide: const BorderSide(color: AppColors.primary20),
               ),
             ),
           ),
@@ -248,7 +253,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
                 _showSnack('Percantik deskripsi untuk $_selectedPlatform'),
             style: FilledButton.styleFrom(
               minimumSize: const Size.fromHeight(48),
-              backgroundColor: const Color(0xFF1C64FF),
+              backgroundColor: AppColors.primary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
               ),
@@ -263,8 +268,8 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
             onPressed: () => _showSnack('Teks siap disalin'),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size.fromHeight(48),
-              foregroundColor: const Color(0xFF1C64FF),
-              side: const BorderSide(color: Color(0xFFB8C4FF)),
+              foregroundColor: AppColors.primary,
+              side: const BorderSide(color: AppColors.primary20),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
               ),
@@ -296,14 +301,14 @@ class _SectionTitle extends StatelessWidget {
           title,
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w700,
-            color: const Color(0xFF181C2F),
+            color: AppColors.primary,
           ),
         ),
         const SizedBox(height: 4),
         Text(
           subtitle,
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: const Color(0xFF6C728C),
+            color: AppColors.primary60,
           ),
         ),
       ],
@@ -328,7 +333,7 @@ class _InfoTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF4F6FB),
+        color: AppColors.primary05,
         borderRadius: BorderRadius.circular(18),
       ),
       child: Row(
@@ -340,7 +345,7 @@ class _InfoTile extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: const Color(0xFF1C64FF)),
+            child: Icon(icon, color: AppColors.primary),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -351,14 +356,14 @@ class _InfoTile extends StatelessWidget {
                   title,
                   style: theme.textTheme.labelLarge?.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: const Color(0xFF1E2340),
+                    color: AppColors.primary,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: const Color(0xFF5E637A),
+                    color: AppColors.primary60,
                   ),
                 ),
               ],

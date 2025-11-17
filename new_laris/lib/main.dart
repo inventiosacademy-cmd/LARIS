@@ -2,8 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
+import 'app_colors.dart';
 import 'firebase_options.dart';
-import 'login_page.dart';
+import 'onboarding_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
       title: 'LARIS AI',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0053FF)),
+        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
       ),
       home: const SplashView(),
     );
@@ -41,8 +42,8 @@ class _SplashViewState extends State<SplashView> {
   late final Future<void> _initializeVideo;
   bool _videoInitializationFailed = false;
   bool _hasNavigated = false;
-  static const _splashStartColor = Color(0xFF38B6FF);
-  static const _splashEndColor = Color(0xFF6FD1FF);
+  static const _splashStartColor = AppColors.primary;
+  static const _splashEndColor = AppColors.primary80;
 
   @override
   void initState() {
@@ -51,7 +52,7 @@ class _SplashViewState extends State<SplashView> {
     _initializeVideo = _initialiseVideoPlayer();
     _videoController.addListener(_handleVideoStatus);
 
-    Future.delayed(const Duration(seconds: 8), _navigateToLogin);
+    Future.delayed(const Duration(seconds: 8), _navigateToOnboarding);
   }
 
   Future<void> _initialiseVideoPlayer() async {
@@ -78,15 +79,15 @@ class _SplashViewState extends State<SplashView> {
     final position = _videoController.value.position;
     final duration = _videoController.value.duration;
     if (position >= duration) {
-      _navigateToLogin();
+      _navigateToOnboarding();
     }
   }
 
-  void _navigateToLogin() {
+  void _navigateToOnboarding() {
     if (_hasNavigated || !mounted) return;
     _hasNavigated = true;
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const LoginPage()),
+      MaterialPageRoute(builder: (_) => const OnboardingPage()),
     );
   }
 

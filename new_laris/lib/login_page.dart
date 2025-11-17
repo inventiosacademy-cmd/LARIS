@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import 'app_colors.dart';
 import 'home_page.dart';
 import 'register_page.dart';
 
@@ -24,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _isGoogleSubmitting = false;
   String? _authError;
 
-  Color get _primaryColor => const Color(0xFF0053FF);
+  Color get _primaryColor => AppColors.primary;
 
   @override
   void dispose() {
@@ -177,7 +178,7 @@ class _LoginPageState extends State<LoginPage> {
                               color: _primaryColor,
                             ),
                             filled: true,
-                            fillColor: const Color(0xFFF4F6FB),
+                            fillColor: AppColors.primary05,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                               borderSide: BorderSide.none,
@@ -215,7 +216,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             filled: true,
-                            fillColor: const Color(0xFFF4F6FB),
+                            fillColor: AppColors.primary05,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                               borderSide: BorderSide.none,
@@ -379,7 +380,7 @@ class _AuthIllustration extends StatelessWidget {
           title,
           style: textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.w700,
-            color: const Color(0xFF192040),
+            color: AppColors.primary,
           ),
         ),
         const SizedBox(height: 4),
@@ -439,7 +440,7 @@ class _SocialButtons extends StatelessWidget {
           child: _SocialButton(
             icon: FontAwesomeIcons.google,
             label: 'Google',
-            color: const Color(0xFFDB4437),
+            color: AppColors.primary,
             onPressed: onGoogleTap,
             isLoading: isGoogleLoading,
           ),
@@ -449,7 +450,7 @@ class _SocialButtons extends StatelessWidget {
           child: _SocialButton(
             icon: FontAwesomeIcons.facebookF,
             label: 'Facebook',
-            color: const Color(0xFF1877F2),
+            color: AppColors.primary,
             onPressed: onFacebookTap,
             isLoading: isFacebookLoading,
           ),
