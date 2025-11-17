@@ -18,7 +18,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       title: 'Satu Aplikasi untuk UMKM Naik Level',
       description:
           'Semua tools AI dalam satu aplikasi. Praktis, cepat, dan siap melesatkan bisnis.',
-      imageAsset: 'assets/onboarding/onboarding_1.png',
+      imageAsset: 'assets/logo.png',
     ),
     _OnboardingSlide(
       title: 'Foto Produk Naik Kelas',
@@ -158,7 +158,7 @@ class _OnboardingSlideView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.40,
+            height: MediaQuery.of(context).size.height * 0.45,
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 400),
               switchInCurve: Curves.easeOut,
@@ -189,7 +189,7 @@ class _OnboardingSlideView extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 6),
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 350),
             child: Column(
@@ -215,7 +215,7 @@ class _OnboardingSlideView extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 6),
         ],
       ),
     );
