@@ -15,9 +15,6 @@ class TemplateSocialMediaPage extends StatefulWidget {
 }
 
 class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
-  final List<String> _platforms = const ['Tiktok', 'Instagram', 'YouTube'];
-  late String _selectedPlatform;
-  late final TextEditingController _copyController;
   final AiImageService _aiImageService = AiImageService();
   final ImagePicker _imagePicker = ImagePicker();
   Uint8List? _selectedImageBytes;
@@ -26,19 +23,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
   bool _isDownloadingImage = false;
 
   @override
-  void initState() {
-    super.initState();
-    _selectedPlatform = _platforms[1];
-    _copyController = TextEditingController(
-      text: 'Keripik Pisang Premium gurih, renyah, dan tidak bikin enek! Cocok '
-          'untuk teman ngopi, nonton, atau hadiah kecil buat orang tersayang. '
-          'Yuk cobain sekarang! Stok terbatas ❤️🔥',
-    );
-  }
-
-  @override
   void dispose() {
-    _copyController.dispose();
     _aiImageService.dispose();
     super.dispose();
   }
@@ -93,7 +78,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
     try {
       final result = await _aiImageService.enhanceProductImage(
         originalBytes,
-        instructions: _platformPrompt,
+        instructions: _photoPrompt,
       );
       if (!mounted) return;
       setState(() {
@@ -126,7 +111,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
 
     try {
       final fileName =
-          'laris_${_selectedPlatform.toLowerCase()}_${DateTime.now().millisecondsSinceEpoch}.${result.suggestedExtension}';
+          'laris_foto_produk_${DateTime.now().millisecondsSinceEpoch}.${result.suggestedExtension}';
       final savedPath = await _aiImageService.downloadImage(
         result.bytes,
         fileName: fileName,
@@ -150,9 +135,9 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
   bool get _canDownloadImage =>
       _aiImageResult != null && !_isDownloadingImage;
 
-  String get _platformPrompt =>
+  String get _photoPrompt =>
       'Percantik foto produk keripik pisang ini agar terlihat tajam, bersih, '
-      'dan menarik untuk diposting di $_selectedPlatform. '
+      'dan menarik untuk katalog dan sosial media. '
       'Pertahankan warna asli produk, tambahkan pencahayaan hangat, '
       'dan tampilkan nuansa premium tanpa mengubah bentuk produk.';
 
@@ -161,7 +146,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: AppColors.primary05,
+      backgroundColor: AppColors.neutral95,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -171,7 +156,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: Text(
-          'Template Sosial Media',
+          'Foto Produk',
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w700,
             color: AppColors.primary,
@@ -185,20 +170,12 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _SectionTitle(
-                title: 'Percantik Gambar',
+                title: 'Foto Produk AI',
                 subtitle:
                     'Tingkatkan visual produk kamu otomatis dengan filter terbaik.',
               ),
               const SizedBox(height: 16),
               _buildImageSection(theme),
-              const SizedBox(height: 32),
-              _SectionTitle(
-                title: 'Percantik Deskripsi',
-                subtitle:
-                    'Biarkan AI membuat copywriting yang pas dengan platform kamu.',
-              ),
-              const SizedBox(height: 16),
-              _buildCopySection(theme),
             ],
           ),
         ),
@@ -308,7 +285,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
                 ? 'Hasil siap diunggah'
                 : 'Brand siap tampil',
             subtitle: _aiImageResult != null
-                ? 'Foto sudah dipoles Gemini untuk $_selectedPlatform.'
+                ? 'Foto sudah dipoles Gemini dan siap diunggah.'
                 : 'Logo dan watermark kamu otomatis terpasang.',
           ),
           const SizedBox(height: 18),
@@ -462,116 +439,6 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
     );
   }
 
-  Widget _buildCopySection(ThemeData theme) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            offset: const Offset(0, 12),
-            blurRadius: 28,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Copywriting untuk platform apa?',
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: AppColors.primary,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _platforms
-                .map(
-                  (platform) => ChoiceChip(
-                    label: Text(platform),
-                    selected: _selectedPlatform == platform,
-                    onSelected: (_) {
-                      setState(() {
-                        _selectedPlatform = platform;
-                      });
-                    },
-                    selectedColor: AppColors.primary,
-                    labelStyle: TextStyle(
-                      color: _selectedPlatform == platform
-                          ? Colors.white
-                          : AppColors.primary60,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    backgroundColor: AppColors.primary05,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
-          const SizedBox(height: 18),
-          TextField(
-            controller: _copyController,
-            maxLines: 6,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: AppColors.primary05,
-              alignLabelWithHint: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: AppColors.primary20),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          _InfoTile(
-            icon: Icons.campaign_outlined,
-            title: 'Ajakan bertindak otomatis',
-            subtitle:
-                'CTA akan disesuaikan untuk ${_selectedPlatform.toLowerCase()}.',
-          ),
-          const SizedBox(height: 18),
-          FilledButton(
-            onPressed: () =>
-                _showSnack('Percantik deskripsi untuk $_selectedPlatform'),
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(48),
-              backgroundColor: AppColors.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-            ),
-            child: const Text(
-              'Percantik dengan AI',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-          ),
-          const SizedBox(height: 12),
-          OutlinedButton(
-            onPressed: () => _showSnack('Teks siap disalin'),
-            style: OutlinedButton.styleFrom(
-              minimumSize: const Size.fromHeight(48),
-              foregroundColor: AppColors.primary,
-              side: const BorderSide(color: AppColors.primary20),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-            ),
-            child: const Text(
-              'Copy',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _SectionTitle extends StatelessWidget {

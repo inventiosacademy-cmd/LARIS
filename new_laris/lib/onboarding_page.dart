@@ -153,33 +153,14 @@ class _OnboardingSlideView extends StatelessWidget {
     final titleColor = Colors.grey.shade800;
     final bodyColor = Colors.grey.shade700;
 
-<<<<<<< ours
-    final imageHeight = MediaQuery.of(context).size.height * 0.45;
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(32),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 26,
-            offset: const Offset(0, 14),
-          ),
-        ],
-      ),
-=======
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
->>>>>>> theirs
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.55,
+            height: MediaQuery.of(context).size.height * 0.60,
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 400),
               switchInCurve: Curves.easeOut,
@@ -196,7 +177,7 @@ class _OnboardingSlideView extends StatelessWidget {
                       color: AppColors.primary40,
                       size: 64,
                     ),
-                    const SizedBox(height: 0),
+                    const SizedBox(height: 12),
                     Text(
                       'Tambahkan ilustrasi ke ${slide.imageAsset}',
                       style: theme.textTheme.bodyMedium?.copyWith(

@@ -14,5 +14,7 @@ class AppColors {
   static const Color primary10 = Color(0x1A0053FF);
   static const Color primary05 = Color(0x0D0053FF);
 
+  static const Color neutral95 = Color(0xFFF4F5F7);
+
   static const Color onPrimary = Colors.white;
 }
