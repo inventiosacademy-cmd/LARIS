@@ -25,6 +25,9 @@ class _CopyWritingPageState extends State<CopyWritingPage> {
   final TextEditingController _productTypeController = TextEditingController();
   final TextEditingController _productSpecialController =
       TextEditingController();
+  final TextEditingController _productLinkController = TextEditingController();
+  final TextEditingController _contactNumberController =
+      TextEditingController();
 
   final AiCopywritingService _service = AiCopywritingService();
 
@@ -42,6 +45,8 @@ class _CopyWritingPageState extends State<CopyWritingPage> {
     _productNameController.dispose();
     _productTypeController.dispose();
     _productSpecialController.dispose();
+    _productLinkController.dispose();
+    _contactNumberController.dispose();
     _service.dispose();
     super.dispose();
   }
@@ -60,6 +65,8 @@ class _CopyWritingPageState extends State<CopyWritingPage> {
     final productName = _productNameController.text.trim();
     final productType = _productTypeController.text.trim();
     final productSpecial = _productSpecialController.text.trim();
+    final productLink = _productLinkController.text.trim();
+    final contactNumber = _contactNumberController.text.trim();
 
     if (productName.isEmpty || productType.isEmpty) {
       _showSnack('Nama dan jenis produk wajib diisi.');
@@ -75,6 +82,8 @@ class _CopyWritingPageState extends State<CopyWritingPage> {
         name: productName,
         type: productType,
         special: productSpecial,
+        productLink: productLink,
+        contactNumber: contactNumber,
       );
       final copy = await _service.generateCopywriting(prompt);
       if (!mounted) return;
@@ -115,6 +124,8 @@ class _CopyWritingPageState extends State<CopyWritingPage> {
     required String name,
     required String type,
     required String special,
+    required String productLink,
+    required String contactNumber,
   }) {
     final tone = _platformGuideline(_selectedPlatform);
     final buffer = StringBuffer()
@@ -128,6 +139,12 @@ class _CopyWritingPageState extends State<CopyWritingPage> {
     if (special.isNotEmpty) {
       buffer.writeln('Ciri khusus produk: $special');
     }
+    if (productLink.isNotEmpty) {
+      buffer.writeln('Link produk atau katalog: $productLink');
+    }
+    if (contactNumber.isNotEmpty) {
+      buffer.writeln('Kontak/WhatsApp pemesanan: $contactNumber');
+    }
 
     buffer
       ..writeln('Gaya bahasa: $tone')
@@ -135,6 +152,11 @@ class _CopyWritingPageState extends State<CopyWritingPage> {
           'Gunakan Bahasa Indonesia natural, maksimal tiga paragraf pendek.')
       ..writeln(
           'Tambahkan ajakan bertindak yang kuat dan 3-5 hashtag relevan di akhir.');
+    if (productLink.isNotEmpty || contactNumber.isNotEmpty) {
+      buffer.writeln(
+        'Pastikan CTA mengarahkan ke link/kontak tersebut agar pembaca tahu cara order.',
+      );
+    }
 
     return buffer.toString();
   }
@@ -159,7 +181,7 @@ class _CopyWritingPageState extends State<CopyWritingPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: AppColors.primary05,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -168,7 +190,7 @@ class _CopyWritingPageState extends State<CopyWritingPage> {
           'Copywriting AI',
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w700,
-            color: AppColors.primary,
+            color: Colors.black87,
           ),
         ),
         leading: IconButton(
@@ -191,6 +213,8 @@ class _CopyWritingPageState extends State<CopyWritingPage> {
                 productNameController: _productNameController,
                 productTypeController: _productTypeController,
                 productSpecialController: _productSpecialController,
+                productLinkController: _productLinkController,
+                contactNumberController: _contactNumberController,
                 onPlatformChanged: _onPlatformChanged,
                 onBeautifyPressed: _onBeautifyPressed,
                 onCopyPressed: _onCopyPressed,
@@ -244,7 +268,7 @@ class _CopywritingPreviewCard extends StatelessWidget {
             'Copywriting untuk $platform',
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
-              color: AppColors.primary,
+              color: Colors.black87,
             ),
           ),
           const SizedBox(height: 12),
@@ -265,7 +289,7 @@ class _CopywritingPreviewCard extends StatelessWidget {
                     'AI sedang merangkai copywriting terbaik...',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      color: AppColors.primary60,
+                      color: Colors.black54,
                     ),
                   ),
                 ),
@@ -279,7 +303,7 @@ class _CopywritingPreviewCard extends StatelessWidget {
                 SizedBox(height: 8),
                 Text(
                   'Hasil copywriting akan tampil di sini setelah tombol "Percantik dengan AI" ditekan.',
-                  style: TextStyle(color: AppColors.primary60, height: 1.4),
+                  style: TextStyle(color: Colors.black54, height: 1.4),
                 ),
               ],
             )
@@ -287,7 +311,7 @@ class _CopywritingPreviewCard extends StatelessWidget {
             SelectableText(
               text!,
               style: theme.textTheme.bodyLarge?.copyWith(
-                color: AppColors.primary80,
+                color: Colors.black87,
                 height: 1.5,
               ),
             ),
@@ -305,6 +329,8 @@ class CopyWritingSection extends StatelessWidget {
     required this.productNameController,
     required this.productTypeController,
     required this.productSpecialController,
+    required this.productLinkController,
+    required this.contactNumberController,
     required this.onPlatformChanged,
     required this.onBeautifyPressed,
     required this.onCopyPressed,
@@ -315,6 +341,8 @@ class CopyWritingSection extends StatelessWidget {
   final TextEditingController productNameController;
   final TextEditingController productTypeController;
   final TextEditingController productSpecialController;
+  final TextEditingController productLinkController;
+  final TextEditingController contactNumberController;
   final ValueChanged<String> onPlatformChanged;
   final VoidCallback onBeautifyPressed;
   final VoidCallback onCopyPressed;
@@ -342,7 +370,7 @@ class CopyWritingSection extends StatelessWidget {
             'Copywriting untuk platform apa?',
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
-              color: AppColors.primary,
+              color: Colors.black87,
             ),
           ),
           const SizedBox(height: 12),
@@ -411,11 +439,46 @@ class CopyWritingSection extends StatelessWidget {
               hint: 'Contoh: Renyah, tidak berminyak, banyak varian rasa',
             ),
           ),
+          const SizedBox(height: 16),
+          _buildFieldLabel(
+            theme,
+            label: 'Link Produk / Landing Page',
+          ),
+          const SizedBox(height: 6),
+          TextField(
+            controller: productLinkController,
+            textInputAction: TextInputAction.next,
+            keyboardType: TextInputType.url,
+            decoration: _inputDecoration(
+              hint: 'Contoh: https://tokokamu.com/keripik',
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildFieldLabel(
+            theme,
+            label: 'Nomor Kontak / WhatsApp',
+          ),
+          const SizedBox(height: 6),
+          TextField(
+            controller: contactNumberController,
+            textInputAction: TextInputAction.done,
+            keyboardType: TextInputType.phone,
+            decoration: _inputDecoration(
+              hint: 'Contoh: 0812-3456-7890',
+            ),
+          ),
           const SizedBox(height: 8),
           Text(
             'Nama produk dan jenis produk wajib diisi sebelum meneruskan ke AI.',
             style: theme.textTheme.bodySmall?.copyWith(
-              color: AppColors.primary60,
+              color: Colors.black54,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Link produk dan nomor kontak opsional, namun AI akan memasukkannya ke CTA jika tersedia.',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: Colors.black54,
             ),
           ),
           const SizedBox(height: 12),
@@ -496,15 +559,15 @@ class CopyWritingSection extends StatelessWidget {
       alignLabelWithHint: true,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppColors.primary20),
+        borderSide: const BorderSide(color: Colors.black12),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppColors.primary20),
+        borderSide: const BorderSide(color: Colors.black12),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppColors.primary40),
+        borderSide: const BorderSide(color: Colors.black87),
       ),
     );
   }

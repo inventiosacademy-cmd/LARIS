@@ -448,7 +448,7 @@ class AiCopywritingService {
 
   static const Duration _defaultTimeout = Duration(seconds: 45);
   static const String _defaultApiKey =
-      'AIzaSyCJ-kkvkSoDEBYQrwErfiQTdm1DK3_sgXA';
+      'AIzaSyACZ_Q3WAShC9X0lhgVcUlZw_GoNyVdEpA';
 
   final http.Client _client;
   final String _apiKey;

@@ -140,15 +140,14 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
   bool get _canEnhanceImage =>
       _selectedImageBytes != null && !_isEnhancingImage;
 
-  bool get _canDownloadImage =>
-      _aiImageResult != null && !_isDownloadingImage;
+  bool get _canDownloadImage => _aiImageResult != null && !_isDownloadingImage;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: AppColors.primary05,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -161,7 +160,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
           'Template Sosial Media',
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w700,
-            color: AppColors.primary,
+            color: Colors.black87,
           ),
         ),
       ),
@@ -210,8 +209,8 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
                 : () => _pickImage(ImageSource.gallery),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size.fromHeight(48),
-              foregroundColor: AppColors.primary,
-              side: const BorderSide(color: AppColors.primary20),
+              foregroundColor: Colors.black87,
+              side: const BorderSide(color: Colors.black26),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
               ),
@@ -232,8 +231,8 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
                     ),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size.fromHeight(48),
-              foregroundColor: AppColors.primary,
-              side: const BorderSide(color: AppColors.primary20),
+              foregroundColor: Colors.black87,
+              side: const BorderSide(color: Colors.black26),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
               ),
@@ -248,7 +247,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
           FilledButton(
             onPressed: _canEnhanceImage ? _enhanceImage : null,
             style: FilledButton.styleFrom(
-              backgroundColor: AppColors.primary,
+              backgroundColor: Colors.black,
               minimumSize: const Size.fromHeight(48),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
@@ -269,13 +268,19 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
                       SizedBox(width: 12),
                       Text(
                         'Memproses...',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
                       ),
                     ],
                   )
                 : const Text(
                     'Percantik Gambar',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
           ),
           const SizedBox(height: 14),
@@ -295,8 +300,8 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
             onPressed: _canDownloadImage ? _downloadImage : null,
             style: OutlinedButton.styleFrom(
               minimumSize: const Size.fromHeight(48),
-              foregroundColor: AppColors.primary,
-              side: const BorderSide(color: AppColors.primary20, width: 1.2),
+              foregroundColor: Colors.black87,
+              side: const BorderSide(color: Colors.black26, width: 1.2),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
               ),
@@ -310,7 +315,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
                         width: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2.4,
-                          color: AppColors.primary,
+                          color: Colors.black,
                         ),
                       ),
                       SizedBox(width: 12),
@@ -395,7 +400,9 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
-        color: highlight ? AppColors.primary : Colors.white.withValues(alpha: 0.92),
+        color: highlight
+            ? AppColors.primary
+            : Colors.white.withValues(alpha: 0.92),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -440,7 +447,6 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
       ),
     );
   }
-
 }
 
 class _SectionTitle extends StatelessWidget {
@@ -459,18 +465,17 @@ class _SectionTitle extends StatelessWidget {
           title,
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w700,
-            color: AppColors.primary,
+            color: Colors.black87,
           ),
         ),
         const SizedBox(height: 4),
         Text(
           subtitle,
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: AppColors.primary60,
+            color: Colors.black54,
           ),
         ),
       ],
     );
   }
 }
-

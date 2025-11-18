@@ -23,7 +23,7 @@ class AiImageService {
 
   static const Duration _defaultTimeout = Duration(minutes: 2);
   static const String _defaultApiKey =
-      'AIzaSyCJ-kkvkSoDEBYQrwErfiQTdm1DK3_sgXA';
+      'AIzaSyACZ_Q3WAShC9X0lhgVcUlZw_GoNyVdEpA';
   static const String _defaultPrompt = '''
 Tingkatkan kualitas visual foto produk e-commerce berikut :
 1. Pertahankan bentuk produk jangan merubah apapun yang ada dalam produk seperti bentuk , warna, merk, dan lainnya
