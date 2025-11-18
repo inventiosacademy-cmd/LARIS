@@ -92,7 +92,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: AppColors.primary05,
+      backgroundColor: AppColors.neutral95,
       body: SafeArea(
         child: Column(
           children: [
