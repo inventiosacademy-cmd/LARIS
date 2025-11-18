@@ -283,6 +283,10 @@ Tingkatkan kualitas visual foto produk e-commerce berikut :
   Future<io.Directory> _resolveDownloadDirectory() async {
     if (!kIsWeb && io.Platform.isAndroid) {
       final preferredPaths = <String>[
+        '/storage/download',
+        '/storage/Download',
+        '/storage/dowload',
+        '/storage/self/primary/Download',
         '/storage/emulated/0/Download',
         '/sdcard/Download',
         '/storage/emulated/0/Downloads',
@@ -312,9 +316,18 @@ Tingkatkan kualitas visual foto produk e-commerce berikut :
       } catch (_) {
         // ignore and try other strategies
       }
-      final manualDownloads = io.Directory('/storage/emulated/0/Download');
-      if (await manualDownloads.exists()) {
-        return manualDownloads;
+      final fallbackManuals = <String>[
+        '/storage/download',
+        '/storage/Download',
+        '/storage/dowload',
+        '/storage/self/primary/Download',
+        '/storage/emulated/0/Download',
+      ];
+      for (final fallback in fallbackManuals) {
+        final manualDownloads = io.Directory(fallback);
+        if (await manualDownloads.exists()) {
+          return manualDownloads;
+        }
       }
     }
 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'app_colors.dart';
+import 'copy_writing.dart';
 import 'services/ai_image_service.dart';
 
 class TemplateSocialMediaPage extends StatefulWidget {
@@ -70,7 +71,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
         _aiImageResult = null;
       });
       if (autoEnhance && !_isEnhancingImage) {
-        await _enhanceImage();
+        await _enhanceImage(sourceBytes: bytes);
       } else {
         _showSnack('Gambar siap diproses.');
       }
@@ -79,8 +80,8 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
     }
   }
 
-  Future<void> _enhanceImage() async {
-    final originalBytes = _selectedImageBytes;
+  Future<void> _enhanceImage({Uint8List? sourceBytes}) async {
+    final originalBytes = sourceBytes ?? _selectedImageBytes;
     if (originalBytes == null) {
       _showSnack('Silakan pilih gambar terlebih dahulu.');
       return;
@@ -190,7 +191,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
                     'Tingkatkan visual produk kamu otomatis dengan filter terbaik.',
               ),
               const SizedBox(height: 16),
-              _buildImageSection(theme),
+              _buildImageSection(),
               const SizedBox(height: 32),
               _SectionTitle(
                 title: 'Percantik Deskripsi',
@@ -198,7 +199,19 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
                     'Biarkan AI membuat copywriting yang pas dengan platform kamu.',
               ),
               const SizedBox(height: 16),
-              _buildCopySection(theme),
+              CopyWritingSection(
+                platforms: _platforms,
+                selectedPlatform: _selectedPlatform,
+                copyController: _copyController,
+                onPlatformChanged: (platform) {
+                  setState(() {
+                    _selectedPlatform = platform;
+                  });
+                },
+                onBeautifyPressed: () =>
+                    _showSnack('Percantik deskripsi untuk $_selectedPlatform'),
+                onCopyPressed: () => _showSnack('Teks siap disalin'),
+              ),
             ],
           ),
         ),
@@ -206,7 +219,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
     );
   }
 
-  Widget _buildImageSection(ThemeData theme) {
+  Widget _buildImageSection() {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -300,7 +313,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
                   ),
           ),
           const SizedBox(height: 14),
-          _InfoTile(
+          TemplateInfoTile(
             icon: _aiImageResult != null
                 ? Icons.check_circle_outline
                 : Icons.layers_outlined,
@@ -462,116 +475,6 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
     );
   }
 
-  Widget _buildCopySection(ThemeData theme) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            offset: const Offset(0, 12),
-            blurRadius: 28,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Copywriting untuk platform apa?',
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: AppColors.primary,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _platforms
-                .map(
-                  (platform) => ChoiceChip(
-                    label: Text(platform),
-                    selected: _selectedPlatform == platform,
-                    onSelected: (_) {
-                      setState(() {
-                        _selectedPlatform = platform;
-                      });
-                    },
-                    selectedColor: AppColors.primary,
-                    labelStyle: TextStyle(
-                      color: _selectedPlatform == platform
-                          ? Colors.white
-                          : AppColors.primary60,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    backgroundColor: AppColors.primary05,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
-          const SizedBox(height: 18),
-          TextField(
-            controller: _copyController,
-            maxLines: 6,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: AppColors.primary05,
-              alignLabelWithHint: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: AppColors.primary20),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          _InfoTile(
-            icon: Icons.campaign_outlined,
-            title: 'Ajakan bertindak otomatis',
-            subtitle:
-                'CTA akan disesuaikan untuk ${_selectedPlatform.toLowerCase()}.',
-          ),
-          const SizedBox(height: 18),
-          FilledButton(
-            onPressed: () =>
-                _showSnack('Percantik deskripsi untuk $_selectedPlatform'),
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(48),
-              backgroundColor: AppColors.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-            ),
-            child: const Text(
-              'Percantik dengan AI',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-          ),
-          const SizedBox(height: 12),
-          OutlinedButton(
-            onPressed: () => _showSnack('Teks siap disalin'),
-            style: OutlinedButton.styleFrom(
-              minimumSize: const Size.fromHeight(48),
-              foregroundColor: AppColors.primary,
-              side: const BorderSide(color: AppColors.primary20),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-            ),
-            child: const Text(
-              'Copy',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _SectionTitle extends StatelessWidget {
@@ -605,61 +508,3 @@ class _SectionTitle extends StatelessWidget {
   }
 }
 
-class _InfoTile extends StatelessWidget {
-  const _InfoTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.primary05,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Row(
-        children: [
-          Container(
-            height: 40,
-            width: 40,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: AppColors.primary),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppColors.primary60,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
