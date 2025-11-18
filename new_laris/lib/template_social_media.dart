@@ -31,7 +31,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
     _selectedPlatform = _platforms[1];
     _copyController = TextEditingController(
       text: 'Keripik Pisang Premium gurih, renyah, dan tidak bikin enek! Cocok '
-          'untuk teman kelip, nonton, atau hadiah kecil buat orang tersayang. '
+          'untuk teman ngopi, nonton, atau hadiah kecil buat orang tersayang. '
           'Yuk cobain sekarang! Stok terbatas ❤️🔥',
     );
   }

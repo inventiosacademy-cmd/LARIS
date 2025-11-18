@@ -30,19 +30,19 @@ class _OnboardingPageState extends State<OnboardingPage> {
       title: 'Copywriting Otomatis Lebih Menjual',
       description:
           'Copywriting otomatis yang langsung jualan. Cocok untuk Instagram, TikTok, YouTube, dan marketplace.',
-      imageAsset: 'assets/onboarding/onboarding_3.png',
+      imageAsset: 'assets/copywriting.png',
     ),
     _OnboardingSlide(
       title: 'Harga Jual Paling Pas di Pasar',
       description:
           'Rekomendasi harga jual otomatis dari HPP, lokasi, dan tren kompetitor untuk profit maksimal.',
-      imageAsset: 'assets/onboarding/onboarding_4.png',
+      imageAsset: 'assets/HPP.png',
     ),
     _OnboardingSlide(
       title: 'Logo Instan untuk UMKM',
       description:
           'Logo profesional siap pakai dalam hitungan detik. Pas untuk brand baru atau rebranding.',
-      imageAsset: 'assets/onboarding/onboarding_5.png',
+      imageAsset: 'assets/generate_logo.png',
     ),
   ];
 
@@ -150,6 +150,8 @@ class _OnboardingSlideView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final titleColor = Colors.grey.shade800;
+    final bodyColor = Colors.grey.shade700;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -158,7 +160,7 @@ class _OnboardingSlideView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.45,
+            height: MediaQuery.of(context).size.height * 0.60,
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 400),
               switchInCurve: Curves.easeOut,
@@ -179,8 +181,9 @@ class _OnboardingSlideView extends StatelessWidget {
                     Text(
                       'Tambahkan ilustrasi ke ${slide.imageAsset}',
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.primary60,
+                        color: titleColor,
                         fontWeight: FontWeight.w600,
+                        fontSize: 14,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -189,7 +192,7 @@ class _OnboardingSlideView extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 10),
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 350),
             child: Column(
@@ -199,8 +202,9 @@ class _OnboardingSlideView extends StatelessWidget {
                   slide.title,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.titleLarge?.copyWith(
-                    color: Colors.black87,
+                    color: titleColor,
                     fontWeight: FontWeight.w700,
+                    fontSize: 24,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -208,14 +212,15 @@ class _OnboardingSlideView extends StatelessWidget {
                   slide.description,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: Colors.black54,
+                    color: bodyColor,
                     height: 1.4,
+                    fontSize: 15,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 12),
         ],
       ),
     );
@@ -238,10 +243,10 @@ class _PageIndicators extends StatelessWidget {
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
           margin: const EdgeInsets.symmetric(horizontal: 4),
-          width: isActive ? 28 : 10,
-          height: 8,
+          width: isActive ? 18 : 8,
+          height: 6,
           decoration: BoxDecoration(
-            color: isActive ? AppColors.primary : AppColors.primary20,
+            color: Colors.grey.shade800,
             borderRadius: BorderRadius.circular(999),
           ),
         );

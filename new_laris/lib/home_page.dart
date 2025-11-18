@@ -1,3 +1,5 @@
+import 'package:characters/characters.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
@@ -57,10 +59,7 @@ class HomePage extends StatelessWidget {
       description: 'Eksplor strategi branding modern bersama mentor kreatif.',
       date: '12 Des 2025 - 09.00 WIB',
       location: 'Jakarta Creative Hub',
-      gradient: [
-        AppColors.primary,
-        AppColors.primary80,
-      ],
+      gradient: [AppColors.primary, AppColors.primary80],
       accent: AppColors.primary,
       textColor: Colors.white,
     ),
@@ -69,10 +68,7 @@ class HomePage extends StatelessWidget {
       description: 'Hands-on session membuat identitas visual dan konten AI.',
       date: '19 Des 2025 - 13.00 WIB',
       location: 'Bandung Workspace',
-      gradient: [
-        AppColors.primary,
-        AppColors.primary60,
-      ],
+      gradient: [AppColors.primary, AppColors.primary60],
       accent: AppColors.primary,
       textColor: Colors.white,
     ),
@@ -81,6 +77,13 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final user = FirebaseAuth.instance.currentUser;
+    final friendlyName = _deriveFriendlyName(user);
+    final avatarInitial = friendlyName.isNotEmpty
+        ? friendlyName.characters.first.toUpperCase()
+        : 'P';
+    final headingColor = Colors.grey.shade800;
+    final bodyColor = Colors.grey.shade700;
 
     return Scaffold(
       backgroundColor: AppColors.primary05,
@@ -92,20 +95,23 @@ class HomePage extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 22,
                     backgroundColor: AppColors.primary10,
-                    child: Icon(
-                      Icons.person,
-                      color: AppColors.primary,
+                    child: Text(
+                      avatarInitial,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: headingColor,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Nessa',
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.primary,
+                    'Hi, $friendlyName 👋',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: headingColor,
                     ),
                   ),
                 ],
@@ -113,9 +119,7 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 'Apa yang kamu butuhkan untuk brand kamu hari ini?',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.primary60,
-                ),
+                style: theme.textTheme.bodyMedium?.copyWith(color: bodyColor),
               ),
               const SizedBox(height: 24),
               const _SearchField(),
@@ -124,7 +128,7 @@ class HomePage extends StatelessWidget {
                 'Layanan Kreatif',
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: AppColors.primary,
+                  color: headingColor,
                 ),
               ),
               const SizedBox(height: 16),
@@ -151,7 +155,7 @@ class HomePage extends StatelessWidget {
                 'Event Acara',
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: AppColors.primary,
+                  color: headingColor,
                 ),
               ),
               const SizedBox(height: 16),
@@ -172,15 +176,13 @@ class HomePage extends StatelessWidget {
     switch (item.id) {
       case 'template':
         Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => const TemplateSocialMediaPage(),
-          ),
+          MaterialPageRoute(builder: (_) => const TemplateSocialMediaPage()),
         );
         break;
       default:
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${item.title} segera hadir!')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${item.title} segera hadir!')));
     }
   }
 }
@@ -205,13 +207,10 @@ class _SearchField extends StatelessWidget {
       child: TextField(
         decoration: InputDecoration(
           hintText: 'Cari layanan kreatif ...',
-          hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.primary40,
-              ),
-          prefixIcon: const Icon(
-            Icons.search_rounded,
-            color: AppColors.primary60,
-          ),
+          hintStyle: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade500),
+          prefixIcon: Icon(Icons.search_rounded, color: Colors.grey.shade600),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 16),
         ),
@@ -229,6 +228,7 @@ class _FeatureButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final labelColor = Colors.grey.shade800;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -265,7 +265,7 @@ class _FeatureButton extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppColors.primary,
+                  color: labelColor,
                 ),
               ),
             ],
@@ -400,6 +400,25 @@ class _FeatureItem {
   });
 }
 
+String _deriveFriendlyName(User? user) {
+  final rawDisplayName = user?.displayName?.trim();
+  if (rawDisplayName != null && rawDisplayName.isNotEmpty) {
+    return rawDisplayName.split(' ').first;
+  }
+
+  final email = user?.email;
+  if (email == null || email.isEmpty) return 'Pengguna';
+  final localPart = email.split('@').first;
+  final sanitized = localPart
+      .split(RegExp(r'[._-]+'))
+      .firstWhere((part) => part.isNotEmpty, orElse: () => localPart);
+  final lettersOnly = RegExp(r'[A-Za-z]+').stringMatch(sanitized) ?? sanitized;
+  if (lettersOnly.isEmpty) return 'Pengguna';
+
+  final lower = lettersOnly.toLowerCase();
+  return lower[0].toUpperCase() + lower.substring(1);
+}
+
 class _EventInfo {
   final String title;
   final String description;
@@ -419,3 +438,4 @@ class _EventInfo {
     required this.textColor,
   });
 }
+

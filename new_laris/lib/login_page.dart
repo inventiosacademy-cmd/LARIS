@@ -6,6 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'app_colors.dart';
 import 'home_page.dart';
 import 'register_page.dart';
+import 'services/session_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -28,6 +29,12 @@ class _LoginPageState extends State<LoginPage> {
   Color get _primaryColor => AppColors.primary;
 
   @override
+  void initState() {
+    super.initState();
+    _loadRememberMePreference();
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
@@ -38,6 +45,22 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       _obscurePassword = !_obscurePassword;
     });
+  }
+
+  Future<void> _loadRememberMePreference() async {
+    final stored = await SessionPreferences.getRememberMeEnabled();
+    if (!mounted) return;
+    setState(() {
+      _rememberMe = stored;
+    });
+  }
+
+  Future<void> _handleRememberMeChanged(bool? value) async {
+    final newValue = value ?? false;
+    setState(() {
+      _rememberMe = newValue;
+    });
+    await SessionPreferences.setRememberMeEnabled(newValue);
   }
 
   Future<void> _signInWithGoogle() async {
@@ -238,11 +261,7 @@ class _LoginPageState extends State<LoginPage> {
                             Checkbox(
                               value: _rememberMe,
                               activeColor: _primaryColor,
-                              onChanged: (value) {
-                                setState(() {
-                                  _rememberMe = value ?? false;
-                                });
-                              },
+                              onChanged: _handleRememberMeChanged,
                             ),
                             const Text('Ingat saya lain kali'),
                           ],
@@ -408,9 +427,9 @@ class _SocialDivider extends StatelessWidget {
           child: Text(
             'atau masuk dengan',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.black54,
-                  fontWeight: FontWeight.w600,
-                ),
+              color: Colors.black54,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
         Expanded(child: Divider(color: color, thickness: 1)),
