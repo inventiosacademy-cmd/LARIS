@@ -26,12 +26,11 @@ class AiImageService {
       'AIzaSyCJ-kkvkSoDEBYQrwErfiQTdm1DK3_sgXA';
   static const String _defaultPrompt = '''
 Tingkatkan kualitas visual foto produk e-commerce berikut :
-1. Pertahankan bentuk produk jangan merubah apapun yang ada dalam produk seperti bentuk , warna, merk, dan lainnya 
-2. Ubah latar belakang menjadi foto katalog profesional dalam studio, sesuaikan tema latar dengan foto produknya
+1. Pertahankan bentuk produk jangan merubah apapun yang ada dalam produk seperti bentuk , warna, merk, dan lainnya
+2. identifikasi produknya apa dan sesuaikan latar belakangnya, Ubah latar belakang menjadi foto katalog profesional dalam studio, tambahkan aksesoris atau pendukung foto produk sesuai dengan produk yang diidentifikasi, latar belakang jangan polos
 3. Pencahayaan terang, tulisan dipertahankan, tajam, tidak blur, FHD
-4.jika ada tangan yang memegang produk, hilangkan tangan tersebut
-5. Jangan menambahkan elemen lain selain produk itu sendiri
-6. Hasil akhir dalam format gambar berkualitas tinggi
+4. jika ada tangan/ jari yang memegang produk, baik diblakang produk maupun di depan produk, hilangkan tangan/ jari tersebut. 
+5. output harus berupa gambar
 ''';
 
   final http.Client _client;

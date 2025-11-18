@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'app_colors.dart';
 import 'copy_writing.dart';
 import 'template_social_media.dart';
+import 'generate_logo.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -146,6 +147,11 @@ class _HomePageState extends State<HomePage> {
       case 'copywriting':
         Navigator.of(context).push(
           MaterialPageRoute(builder: (_) => const CopyWritingPage()),
+        );
+        break;
+      case 'logo':
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const GenerateLogoPage()),
         );
         break;
       default:
