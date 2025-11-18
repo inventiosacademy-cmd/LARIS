@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'app_colors.dart';
+import 'copy_writing.dart';
 import 'services/ai_image_service.dart';
 
 class TemplateSocialMediaPage extends StatefulWidget {
@@ -15,6 +16,9 @@ class TemplateSocialMediaPage extends StatefulWidget {
 }
 
 class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
+  static const List<String> _platforms = ['TikTok', 'Instagram', 'YouTube'];
+  late final TextEditingController _copyController;
+  late String _selectedPlatform;
   final AiImageService _aiImageService = AiImageService();
   final ImagePicker _imagePicker = ImagePicker();
   Uint8List? _selectedImageBytes;
@@ -23,15 +27,28 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
   bool _isDownloadingImage = false;
 
   @override
+  void initState() {
+    super.initState();
+    _selectedPlatform = _platforms[1];
+    _copyController = TextEditingController(
+      text:
+          'Keripik Pisang Premium gurih, renyah, dan tidak bikin enek! '
+          'Cocok untuk teman ngopi, nonton, atau hadiah kecil buat orang '
+          'tersayang. Yuk cobain sekarang! Stok terbatas!',
+    );
+  }
+
+  @override
   void dispose() {
+    _copyController.dispose();
     _aiImageService.dispose();
     super.dispose();
   }
 
   void _showSnack(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _pickImage(
@@ -55,7 +72,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
         _aiImageResult = null;
       });
       if (autoEnhance && !_isEnhancingImage) {
-        await _enhanceImage();
+        await _enhanceImage(sourceBytes: bytes);
       } else {
         _showSnack('Gambar siap diproses.');
       }
@@ -64,8 +81,8 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
     }
   }
 
-  Future<void> _enhanceImage() async {
-    final originalBytes = _selectedImageBytes;
+  Future<void> _enhanceImage({Uint8List? sourceBytes}) async {
+    final originalBytes = sourceBytes ?? _selectedImageBytes;
     if (originalBytes == null) {
       _showSnack('Silakan pilih gambar terlebih dahulu.');
       return;
@@ -78,7 +95,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
     try {
       final result = await _aiImageService.enhanceProductImage(
         originalBytes,
-        instructions: _photoPrompt,
+        instructions: _platformPrompt,
       );
       if (!mounted) return;
       setState(() {
@@ -110,8 +127,12 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
     });
 
     try {
+      final normalizedPlatform = _selectedPlatform.toLowerCase().replaceAll(
+        ' ',
+        '_',
+      );
       final fileName =
-          'laris_foto_produk_${DateTime.now().millisecondsSinceEpoch}.${result.suggestedExtension}';
+          'laris_${normalizedPlatform}_${DateTime.now().millisecondsSinceEpoch}.${result.suggestedExtension}';
       final savedPath = await _aiImageService.downloadImage(
         result.bytes,
         fileName: fileName,
@@ -132,12 +153,11 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
   bool get _canEnhanceImage =>
       _selectedImageBytes != null && !_isEnhancingImage;
 
-  bool get _canDownloadImage =>
-      _aiImageResult != null && !_isDownloadingImage;
+  bool get _canDownloadImage => _aiImageResult != null && !_isDownloadingImage;
 
-  String get _photoPrompt =>
+  String get _platformPrompt =>
       'Percantik foto produk keripik pisang ini agar terlihat tajam, bersih, '
-      'dan menarik untuk katalog dan sosial media. '
+      'dan menarik untuk diposting di $_selectedPlatform. '
       'Pertahankan warna asli produk, tambahkan pencahayaan hangat, '
       'dan tampilkan nuansa premium tanpa mengubah bentuk produk.';
 
@@ -175,7 +195,27 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
                     'Tingkatkan visual produk kamu otomatis dengan filter terbaik.',
               ),
               const SizedBox(height: 16),
-              _buildImageSection(theme),
+              _buildImageSection(),
+              const SizedBox(height: 32),
+              _SectionTitle(
+                title: 'Percantik Deskripsi',
+                subtitle:
+                    'Biarkan AI membuat copywriting yang pas dengan platform kamu.',
+              ),
+              const SizedBox(height: 16),
+              CopyWritingSection(
+                platforms: _platforms,
+                selectedPlatform: _selectedPlatform,
+                copyController: _copyController,
+                onPlatformChanged: (platform) {
+                  setState(() {
+                    _selectedPlatform = platform;
+                  });
+                },
+                onBeautifyPressed: () =>
+                    _showSnack('Percantik deskripsi untuk $_selectedPlatform'),
+                onCopyPressed: () => _showSnack('Teks siap disalin'),
+              ),
             ],
           ),
         ),
@@ -183,7 +223,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
     );
   }
 
-  Widget _buildImageSection(ThemeData theme) {
+  Widget _buildImageSection() {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -224,10 +264,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
           OutlinedButton.icon(
             onPressed: _isEnhancingImage
                 ? null
-                : () => _pickImage(
-                      ImageSource.camera,
-                      autoEnhance: true,
-                    ),
+                : () => _pickImage(ImageSource.camera, autoEnhance: true),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size.fromHeight(48),
               foregroundColor: AppColors.primary,
@@ -277,7 +314,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
                   ),
           ),
           const SizedBox(height: 14),
-          _InfoTile(
+          TemplateInfoTile(
             icon: _aiImageResult != null
                 ? Icons.check_circle_outline
                 : Icons.layers_outlined,
@@ -285,7 +322,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
                 ? 'Hasil siap diunggah'
                 : 'Brand siap tampil',
             subtitle: _aiImageResult != null
-                ? 'Foto sudah dipoles Gemini dan siap diunggah.'
+                ? 'Foto sudah dipoles Gemini untuk $_selectedPlatform.'
                 : 'Logo dan watermark kamu otomatis terpasang.',
           ),
           const SizedBox(height: 18),
@@ -377,8 +414,8 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
                 showResultLabel
                     ? 'Hasil AI'
                     : previewBytes != null
-                        ? 'Siap diproses'
-                        : 'Belum ada gambar',
+                    ? 'Siap diproses'
+                    : 'Belum ada gambar',
                 highlight: showResultLabel,
               ),
             ),
@@ -393,7 +430,9 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
-        color: highlight ? AppColors.primary : Colors.white.withValues(alpha: 0.92),
+        color: highlight
+            ? AppColors.primary
+            : Colors.white.withValues(alpha: 0.92),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -429,16 +468,12 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
           SizedBox(height: 12),
           Text(
             'AI sedang memoles foto...',
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w700, color: Colors.white),
           ),
         ],
       ),
     );
   }
-
 }
 
 class _SectionTitle extends StatelessWidget {
@@ -468,65 +503,6 @@ class _SectionTitle extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _InfoTile extends StatelessWidget {
-  const _InfoTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.primary05,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Row(
-        children: [
-          Container(
-            height: 40,
-            width: 40,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: AppColors.primary),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppColors.primary60,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

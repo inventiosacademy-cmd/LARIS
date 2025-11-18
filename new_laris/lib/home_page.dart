@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
 import 'copywriting_page.dart';
+import 'ai_copywriting.dart';
 import 'template_social_media.dart';
 
 class HomePage extends StatefulWidget {
@@ -147,6 +148,9 @@ class _HomePageState extends State<HomePage> {
         Navigator.of(
           context,
         ).push(MaterialPageRoute(builder: (_) => const CopywritingPage()));
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const AiCopywritingPage()));
         break;
       default:
         ScaffoldMessenger.of(
