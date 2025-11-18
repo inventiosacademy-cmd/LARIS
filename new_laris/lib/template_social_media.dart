@@ -322,7 +322,7 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
                 ? 'Hasil siap diunggah'
                 : 'Brand siap tampil',
             subtitle: _aiImageResult != null
-                ? 'Foto sudah dipoles Gemini untuk $_selectedPlatform.'
+                ? 'Foto sudah dipoles Gemini dan siap diunggah.'
                 : 'Logo dan watermark kamu otomatis terpasang.',
           ),
           const SizedBox(height: 18),
