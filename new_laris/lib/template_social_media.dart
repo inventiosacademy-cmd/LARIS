@@ -49,10 +49,13 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
     );
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImage(
+    ImageSource source, {
+    bool autoEnhance = false,
+  }) async {
     try {
       final pickedFile = await _imagePicker.pickImage(
-        source: ImageSource.gallery,
+        source: source,
         maxHeight: 2048,
         maxWidth: 2048,
         imageQuality: 90,
@@ -66,7 +69,11 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
         _selectedImageBytes = bytes;
         _aiImageResult = null;
       });
-      _showSnack('Gambar siap diproses.');
+      if (autoEnhance && !_isEnhancingImage) {
+        await _enhanceImage();
+      } else {
+        _showSnack('Gambar siap diproses.');
+      }
     } catch (error) {
       _showSnack('Gagal mengambil gambar: $error');
     }
@@ -219,7 +226,9 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
           _buildImagePreview(),
           const SizedBox(height: 18),
           OutlinedButton.icon(
-            onPressed: _isEnhancingImage ? null : _pickImage,
+            onPressed: _isEnhancingImage
+                ? null
+                : () => _pickImage(ImageSource.gallery),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size.fromHeight(48),
               foregroundColor: AppColors.primary,
@@ -228,9 +237,31 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
                 borderRadius: BorderRadius.circular(24),
               ),
             ),
-            icon: const Icon(Icons.upload_rounded),
+            icon: const Icon(Icons.upload_file_rounded),
             label: const Text(
-              'Pilih Gambar',
+              'Pilih dari File',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: _isEnhancingImage
+                ? null
+                : () => _pickImage(
+                      ImageSource.camera,
+                      autoEnhance: true,
+                    ),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(48),
+              foregroundColor: AppColors.primary,
+              side: const BorderSide(color: AppColors.primary20),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+            ),
+            icon: const Icon(Icons.photo_camera_outlined),
+            label: const Text(
+              'Ambil dari Kamera',
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
           ),

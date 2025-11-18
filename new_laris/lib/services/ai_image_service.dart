@@ -29,6 +29,9 @@ Tingkatkan kualitas visual foto produk e-commerce berikut :
 1. Pertahankan bentuk produk jangan merubah apapun yang ada dalam produk seperti bentuk , warna, merk, dan lainnya 
 2. Ubah latar belakang menjadi foto katalog profesional dalam studio, sesuaikan tema latar dengan foto produknya
 3. Pencahayaan terang, tulisan dipertahankan, tajam, tidak blur, FHD
+4.jika ada tangan yang memegang produk, hilangkan tangan tersebut
+5. Jangan menambahkan elemen lain selain produk itu sendiri
+6. Hasil akhir dalam format gambar berkualitas tinggi
 ''';
 
   final http.Client _client;
@@ -278,6 +281,43 @@ Tingkatkan kualitas visual foto produk e-commerce berikut :
   }
 
   Future<io.Directory> _resolveDownloadDirectory() async {
+    if (!kIsWeb && io.Platform.isAndroid) {
+      final preferredPaths = <String>[
+        '/storage/emulated/0/Download',
+        '/sdcard/Download',
+        '/storage/emulated/0/Downloads',
+      ];
+      for (final path in preferredPaths) {
+        final manual = io.Directory(path);
+        if (await manual.exists()) {
+          return manual;
+        }
+        try {
+          await manual.create(recursive: true);
+          if (await manual.exists()) {
+            return manual;
+          }
+        } catch (_) {
+          // ignore create errors and continue
+        }
+      }
+
+      try {
+        final externalDirs = await getExternalStorageDirectories(
+          type: StorageDirectory.downloads,
+        );
+        if (externalDirs != null && externalDirs.isNotEmpty) {
+          return io.Directory(externalDirs.first.path);
+        }
+      } catch (_) {
+        // ignore and try other strategies
+      }
+      final manualDownloads = io.Directory('/storage/emulated/0/Download');
+      if (await manualDownloads.exists()) {
+        return manualDownloads;
+      }
+    }
+
     try {
       final downloads = await getDownloadsDirectory();
       if (downloads != null) {
