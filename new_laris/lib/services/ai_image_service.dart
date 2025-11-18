@@ -384,6 +384,12 @@ Tingkatkan kualitas visual foto produk e-commerce berikut :
     return sanitized.isEmpty ? 'laris_ai_image.png' : sanitized;
   }
 
+  String _stripExtension(String fileName) {
+    final dotIndex = fileName.lastIndexOf('.');
+    if (dotIndex <= 0) return fileName;
+    return fileName.substring(0, dotIndex);
+  }
+
   String _extractErrorMessage(http.Response response) {
     final parsed = _tryDecodeJson(response);
     if (parsed != null) {

@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
 import 'copy_writing.dart';
-import 'template_social_media.dart';
+import 'foto_produk.dart';
 import 'generate_logo.dart';
 
 class HomePage extends StatefulWidget {
@@ -38,20 +38,6 @@ class HomePage extends StatefulWidget {
       title: 'Copywriting',
       icon: Icons.edit_outlined,
       assetIcon: 'assets/copywriting.png',
-      backgroundColor: AppColors.neutral95,
-      iconColor: AppColors.primary,
-    ),
-    _FeatureItem(
-      id: 'konsultan',
-      title: 'Konsultan AI',
-      icon: Icons.psychology_alt_outlined,
-      backgroundColor: AppColors.neutral95,
-      iconColor: AppColors.primary,
-    ),
-    _FeatureItem(
-      id: 'pitch',
-      title: 'Pitch Deck',
-      icon: Icons.slideshow_outlined,
       backgroundColor: AppColors.neutral95,
       iconColor: AppColors.primary,
     ),

@@ -213,12 +213,14 @@ class _CopyWritingPageState extends State<CopyWritingPage> {
                 productNameController: _productNameController,
                 productTypeController: _productTypeController,
                 productSpecialController: _productSpecialController,
-                productLinkController: _productLinkController,
-                contactNumberController: _contactNumberController,
-                onPlatformChanged: _onPlatformChanged,
-                onBeautifyPressed: _onBeautifyPressed,
-                onCopyPressed: _onCopyPressed,
-              ),
+              productLinkController: _productLinkController,
+              contactNumberController: _contactNumberController,
+              onPlatformChanged: _onPlatformChanged,
+              onBeautifyPressed: _onBeautifyPressed,
+              onCopyPressed: _onCopyPressed,
+              hasResult:
+                  _generatedCopy != null && _generatedCopy!.trim().isNotEmpty,
+            ),
               const SizedBox(height: 20),
               _CopywritingPreviewCard(
                 platform: _selectedPlatform,
@@ -247,76 +249,43 @@ class _CopywritingPreviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            offset: const Offset(0, 12),
-            blurRadius: 28,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Copywriting untuk $platform',
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 12),
-          if (isLoading)
-            Row(
-              children: const [
-                SizedBox(
-                  height: 24,
-                  width: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 3,
-                    color: AppColors.primary,
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (isLoading)
+          Row(
+            children: const [
+              SizedBox(
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 3,
+                  color: AppColors.primary,
                 ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'AI sedang merangkai copywriting terbaik...',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black54,
-                    ),
-                  ),
-                ),
-              ],
-            )
-          else if (text == null)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Icon(Icons.auto_awesome, color: AppColors.primary40),
-                SizedBox(height: 8),
-                Text(
-                  'Hasil copywriting akan tampil di sini setelah tombol "Percantik dengan AI" ditekan.',
-                  style: TextStyle(color: Colors.black54, height: 1.4),
-                ),
-              ],
-            )
-          else
-            SelectableText(
-              text!,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: Colors.black87,
-                height: 1.5,
               ),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'AI sedang merangkai copywriting terbaik...',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black54,
+                  ),
+                ),
+              ),
+            ],
+          )
+        else if (text == null)
+          const SizedBox.shrink()
+        else
+          SelectableText(
+            text!,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: Colors.black87,
+              height: 1.5,
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 }
@@ -334,6 +303,7 @@ class CopyWritingSection extends StatelessWidget {
     required this.onPlatformChanged,
     required this.onBeautifyPressed,
     required this.onCopyPressed,
+    required this.hasResult,
   });
 
   final List<String> platforms;
@@ -346,164 +316,107 @@ class CopyWritingSection extends StatelessWidget {
   final ValueChanged<String> onPlatformChanged;
   final VoidCallback onBeautifyPressed;
   final VoidCallback onCopyPressed;
+  final bool hasResult;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            offset: const Offset(0, 12),
-            blurRadius: 28,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildFieldLabel(
+          theme,
+          label: 'Nama Produk',
+          required: true,
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          controller: productNameController,
+          textInputAction: TextInputAction.next,
+          decoration: _inputDecoration(
+            hint: 'Contoh: Keripik Pisang Laris',
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Copywriting untuk platform apa?',
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: Colors.black87,
-            ),
+        ),
+        const SizedBox(height: 16),
+        _buildFieldLabel(
+          theme,
+          label: 'Jenis Produk',
+          required: true,
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          controller: productTypeController,
+          textInputAction: TextInputAction.next,
+          decoration: _inputDecoration(
+            hint: 'Contoh: Snack premium tanpa pengawet',
           ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: platforms
-                .map(
-                  (platform) => ChoiceChip(
-                    label: Text(platform),
-                    selected: selectedPlatform == platform,
-                    onSelected: (_) => onPlatformChanged(platform),
-                    selectedColor: AppColors.primary,
-                    labelStyle: TextStyle(
-                      color: selectedPlatform == platform
-                          ? Colors.white
-                          : AppColors.primary60,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    backgroundColor: AppColors.primary05,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                )
-                .toList(),
+        ),
+        const SizedBox(height: 16),
+        _buildFieldLabel(
+          theme,
+          label: 'Ciri Khusus Produk',
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          controller: productSpecialController,
+          maxLines: 3,
+          decoration: _inputDecoration(
+            hint: 'Contoh: Renyah, tidak berminyak, banyak varian rasa',
           ),
-          const SizedBox(height: 18),
-          _buildFieldLabel(
-            theme,
-            label: 'Nama Produk',
-            required: true,
+        ),
+        const SizedBox(height: 16),
+        _buildFieldLabel(
+          theme,
+          label: 'Link Produk / Landing Page',
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          controller: productLinkController,
+          textInputAction: TextInputAction.next,
+          keyboardType: TextInputType.url,
+          decoration: _inputDecoration(
+            hint: 'Contoh: https://tokokamu.com/keripik',
           ),
-          const SizedBox(height: 6),
-          TextField(
-            controller: productNameController,
-            textInputAction: TextInputAction.next,
-            decoration: _inputDecoration(
-              hint: 'Contoh: Keripik Pisang Laris',
-            ),
+        ),
+        const SizedBox(height: 16),
+        _buildFieldLabel(
+          theme,
+          label: 'Nomor Kontak / WhatsApp',
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          controller: contactNumberController,
+          textInputAction: TextInputAction.done,
+          keyboardType: TextInputType.phone,
+          decoration: _inputDecoration(
+            hint: 'Contoh: 0812-3456-7890',
           ),
+        ),
+        const SizedBox(height: 16),
+        _buildFieldLabel(
+          theme,
+          label: 'Copywriting untuk apa?',
+        ),
+        const SizedBox(height: 6),
+        DropdownButtonFormField<String>(
+          value: selectedPlatform,
+          decoration: _inputDecoration(hint: 'Pilih platform tujuan'),
+          items: platforms
+              .map(
+                (platform) => DropdownMenuItem(
+                  value: platform,
+                  child: Text(platform),
+                ),
+              )
+              .toList(),
+          onChanged: (value) {
+            if (value != null) {
+              onPlatformChanged(value);
+            }
+          },
+        ),
+        if (hasResult) ...[
           const SizedBox(height: 16),
-          _buildFieldLabel(
-            theme,
-            label: 'Jenis Produk',
-            required: true,
-          ),
-          const SizedBox(height: 6),
-          TextField(
-            controller: productTypeController,
-            textInputAction: TextInputAction.next,
-            decoration: _inputDecoration(
-              hint: 'Contoh: Snack premium tanpa pengawet',
-            ),
-          ),
-          const SizedBox(height: 16),
-          _buildFieldLabel(
-            theme,
-            label: 'Ciri Khusus Produk',
-          ),
-          const SizedBox(height: 6),
-          TextField(
-            controller: productSpecialController,
-            maxLines: 3,
-            decoration: _inputDecoration(
-              hint: 'Contoh: Renyah, tidak berminyak, banyak varian rasa',
-            ),
-          ),
-          const SizedBox(height: 16),
-          _buildFieldLabel(
-            theme,
-            label: 'Link Produk / Landing Page',
-          ),
-          const SizedBox(height: 6),
-          TextField(
-            controller: productLinkController,
-            textInputAction: TextInputAction.next,
-            keyboardType: TextInputType.url,
-            decoration: _inputDecoration(
-              hint: 'Contoh: https://tokokamu.com/keripik',
-            ),
-          ),
-          const SizedBox(height: 16),
-          _buildFieldLabel(
-            theme,
-            label: 'Nomor Kontak / WhatsApp',
-          ),
-          const SizedBox(height: 6),
-          TextField(
-            controller: contactNumberController,
-            textInputAction: TextInputAction.done,
-            keyboardType: TextInputType.phone,
-            decoration: _inputDecoration(
-              hint: 'Contoh: 0812-3456-7890',
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Nama produk dan jenis produk wajib diisi sebelum meneruskan ke AI.',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: Colors.black54,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Link produk dan nomor kontak opsional, namun AI akan memasukkannya ke CTA jika tersedia.',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: Colors.black54,
-            ),
-          ),
-          const SizedBox(height: 12),
-          TemplateInfoTile(
-            icon: Icons.campaign_outlined,
-            title: 'Ajakan bertindak otomatis',
-            subtitle:
-                'CTA akan disesuaikan untuk ${selectedPlatform.toLowerCase()}.',
-          ),
-          const SizedBox(height: 18),
-          FilledButton(
-            onPressed: onBeautifyPressed,
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(48),
-              backgroundColor: AppColors.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-            ),
-            child: const Text(
-              'Percantik dengan AI',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-          ),
-          const SizedBox(height: 12),
           OutlinedButton(
             onPressed: onCopyPressed,
             style: OutlinedButton.styleFrom(
@@ -520,7 +433,22 @@ class CopyWritingSection extends StatelessWidget {
             ),
           ),
         ],
-      ),
+        const SizedBox(height: 18),
+        FilledButton(
+          onPressed: onBeautifyPressed,
+          style: FilledButton.styleFrom(
+            minimumSize: const Size.fromHeight(48),
+            backgroundColor: AppColors.primary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+          ),
+          child: const Text(
+            'Percantik dengan AI',
+            style: TextStyle(fontWeight: FontWeight.w700),
+          ),
+        ),
+      ],
     );
   }
 
@@ -534,7 +462,7 @@ class CopyWritingSection extends StatelessWidget {
         text: label,
         style: theme.textTheme.labelLarge?.copyWith(
           fontWeight: FontWeight.w700,
-          color: AppColors.primary,
+          color: Colors.black87,
         ),
         children: required
             ? [
@@ -568,66 +496,6 @@ class CopyWritingSection extends StatelessWidget {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
         borderSide: const BorderSide(color: Colors.black87),
-      ),
-    );
-  }
-}
-
-class TemplateInfoTile extends StatelessWidget {
-  const TemplateInfoTile({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.primary05,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Row(
-        children: [
-          Container(
-            height: 40,
-            width: 40,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: AppColors.primary),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppColors.primary60,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
