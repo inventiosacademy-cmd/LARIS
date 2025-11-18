@@ -1,6 +1,301 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'app_colors.dart';
+import 'services/ai_copywriting_service.dart';
+
+class CopyWritingPage extends StatefulWidget {
+  const CopyWritingPage({super.key});
+
+  @override
+  State<CopyWritingPage> createState() => _CopyWritingPageState();
+}
+
+class _CopyWritingPageState extends State<CopyWritingPage> {
+  final List<String> _platforms = const [
+    'Instagram',
+    'TikTok Shop',
+    'Shopee Live',
+    'WhatsApp Broadcast',
+    'Marketplace',
+  ];
+  late String _selectedPlatform;
+
+  final TextEditingController _productNameController = TextEditingController();
+  final TextEditingController _productTypeController = TextEditingController();
+  final TextEditingController _productSpecialController =
+      TextEditingController();
+
+  final AiCopywritingService _service = AiCopywritingService();
+
+  bool _isBeautifying = false;
+  String? _generatedCopy;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedPlatform = _platforms.first;
+  }
+
+  @override
+  void dispose() {
+    _productNameController.dispose();
+    _productTypeController.dispose();
+    _productSpecialController.dispose();
+    _service.dispose();
+    super.dispose();
+  }
+
+  void _onPlatformChanged(String platform) {
+    if (_selectedPlatform == platform) {
+      return;
+    }
+    setState(() {
+      _selectedPlatform = platform;
+    });
+  }
+
+  Future<void> _onBeautifyPressed() async {
+    if (_isBeautifying) return;
+    final productName = _productNameController.text.trim();
+    final productType = _productTypeController.text.trim();
+    final productSpecial = _productSpecialController.text.trim();
+
+    if (productName.isEmpty || productType.isEmpty) {
+      _showSnack('Nama dan jenis produk wajib diisi.');
+      return;
+    }
+
+    setState(() {
+      _isBeautifying = true;
+    });
+
+    try {
+      final prompt = _buildPrompt(
+        name: productName,
+        type: productType,
+        special: productSpecial,
+      );
+      final copy = await _service.generateCopywriting(prompt);
+      if (!mounted) return;
+      setState(() {
+        _generatedCopy = copy;
+      });
+      _showSnack('Copywriting berhasil dibuat.');
+    } on AiCopywritingServiceException catch (error) {
+      _showSnack(error.message);
+    } catch (error) {
+      _showSnack('Gagal meminta copywriting: $error');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isBeautifying = false;
+        });
+      }
+    }
+  }
+
+  void _onCopyPressed() {
+    final text = _generatedCopy;
+    if (text == null || text.trim().isEmpty) {
+      _showSnack('Belum ada copywriting untuk disalin.');
+      return;
+    }
+    Clipboard.setData(ClipboardData(text: text));
+    _showSnack('Copywriting disalin.');
+  }
+
+  void _showSnack(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  String _buildPrompt({
+    required String name,
+    required String type,
+    required String special,
+  }) {
+    final tone = _platformGuideline(_selectedPlatform);
+    final buffer = StringBuffer()
+      ..writeln(
+          'Kamu adalah copywriter profesional untuk UMKM kuliner Indonesia.')
+      ..writeln(
+          'Tulis satu copywriting ${_selectedPlatform.toLowerCase()} yang persuasif dan siap posting.')
+      ..writeln('Nama produk: $name')
+      ..writeln('Jenis produk: $type');
+
+    if (special.isNotEmpty) {
+      buffer.writeln('Ciri khusus produk: $special');
+    }
+
+    buffer
+      ..writeln('Gaya bahasa: $tone')
+      ..writeln(
+          'Gunakan Bahasa Indonesia natural, maksimal tiga paragraf pendek.')
+      ..writeln(
+          'Tambahkan ajakan bertindak yang kuat dan 3-5 hashtag relevan di akhir.');
+
+    return buffer.toString();
+  }
+
+  String _platformGuideline(String platform) {
+    switch (platform) {
+      case 'Instagram':
+        return 'Storytelling estetik, gunakan emoji secukupnya, akhiri dengan CTA seperti "cek link di bio" atau "tap buat lihat katalog".';
+      case 'TikTok Shop':
+        return 'Hook kuat di 2 detik pertama, kalimat pendek penuh energi, sertakan CTA "checkout sekarang" dan highlight stok terbatas.';
+      case 'Shopee Live':
+        return 'Gunakan bahasa percakapan layaknya host live, sebut promo dan bonus, akhiri dengan CTA "serbu sekarang sebelum habis".';
+      case 'WhatsApp Broadcast':
+        return 'Bahasa personal, hangat, beri sapaan singkat, tawarkan promo terbatas dan ajak balas chat untuk order.';
+      case 'Marketplace':
+      default:
+        return 'Tekankan manfaat dan detail produk, sertakan bukti sosial singkat, sebut harga atau bonus, tutup dengan CTA "beli sekarang".';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Scaffold(
+      backgroundColor: AppColors.primary05,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          'Copywriting AI',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: AppColors.primary,
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: AppColors.primary,
+          ),
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CopyWritingSection(
+                platforms: _platforms,
+                selectedPlatform: _selectedPlatform,
+                productNameController: _productNameController,
+                productTypeController: _productTypeController,
+                productSpecialController: _productSpecialController,
+                onPlatformChanged: _onPlatformChanged,
+                onBeautifyPressed: _onBeautifyPressed,
+                onCopyPressed: _onCopyPressed,
+              ),
+              const SizedBox(height: 20),
+              _CopywritingPreviewCard(
+                platform: _selectedPlatform,
+                isLoading: _isBeautifying,
+                text: _generatedCopy,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CopywritingPreviewCard extends StatelessWidget {
+  const _CopywritingPreviewCard({
+    required this.platform,
+    required this.isLoading,
+    required this.text,
+  });
+
+  final String platform;
+  final bool isLoading;
+  final String? text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            offset: const Offset(0, 12),
+            blurRadius: 28,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Copywriting untuk $platform',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: AppColors.primary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          if (isLoading)
+            Row(
+              children: const [
+                SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3,
+                    color: AppColors.primary,
+                  ),
+                ),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'AI sedang merangkai copywriting terbaik...',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary60,
+                    ),
+                  ),
+                ),
+              ],
+            )
+          else if (text == null)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Icon(Icons.auto_awesome, color: AppColors.primary40),
+                SizedBox(height: 8),
+                Text(
+                  'Hasil copywriting akan tampil di sini setelah tombol "Percantik dengan AI" ditekan.',
+                  style: TextStyle(color: AppColors.primary60, height: 1.4),
+                ),
+              ],
+            )
+          else
+            SelectableText(
+              text!,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: AppColors.primary80,
+                height: 1.5,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
 
 class CopyWritingSection extends StatelessWidget {
   const CopyWritingSection({

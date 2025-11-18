@@ -2,9 +2,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:new_laris/copy_writing.dart';
 
 import 'app_colors.dart';
-import 'copy_writing.dart';
 import 'services/ai_image_service.dart';
 
 class TemplateSocialMediaPage extends StatefulWidget {
@@ -18,7 +18,6 @@ class TemplateSocialMediaPage extends StatefulWidget {
 class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
   final List<String> _platforms = const ['Tiktok', 'Instagram', 'YouTube'];
   late String _selectedPlatform;
-  late final TextEditingController _copyController;
   final AiImageService _aiImageService = AiImageService();
   final ImagePicker _imagePicker = ImagePicker();
   Uint8List? _selectedImageBytes;
@@ -30,16 +29,10 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
   void initState() {
     super.initState();
     _selectedPlatform = _platforms[1];
-    _copyController = TextEditingController(
-      text: 'Keripik Pisang Premium gurih, renyah, dan tidak bikin enek! Cocok '
-          'untuk teman ngopi, nonton, atau hadiah kecil buat orang tersayang. '
-          'Yuk cobain sekarang! Stok terbatas ❤️🔥',
-    );
   }
 
   @override
   void dispose() {
-    _copyController.dispose();
     _aiImageService.dispose();
     super.dispose();
   }
@@ -94,7 +87,6 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
     try {
       final result = await _aiImageService.enhanceProductImage(
         originalBytes,
-        instructions: _platformPrompt,
       );
       if (!mounted) return;
       setState(() {
@@ -151,12 +143,6 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
   bool get _canDownloadImage =>
       _aiImageResult != null && !_isDownloadingImage;
 
-  String get _platformPrompt =>
-      'Percantik foto produk keripik pisang ini agar terlihat tajam, bersih, '
-      'dan menarik untuk diposting di $_selectedPlatform. '
-      'Pertahankan warna asli produk, tambahkan pencahayaan hangat, '
-      'dan tampilkan nuansa premium tanpa mengubah bentuk produk.';
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -192,26 +178,6 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
               ),
               const SizedBox(height: 16),
               _buildImageSection(),
-              const SizedBox(height: 32),
-              _SectionTitle(
-                title: 'Percantik Deskripsi',
-                subtitle:
-                    'Biarkan AI membuat copywriting yang pas dengan platform kamu.',
-              ),
-              const SizedBox(height: 16),
-              CopyWritingSection(
-                platforms: _platforms,
-                selectedPlatform: _selectedPlatform,
-                copyController: _copyController,
-                onPlatformChanged: (platform) {
-                  setState(() {
-                    _selectedPlatform = platform;
-                  });
-                },
-                onBeautifyPressed: () =>
-                    _showSnack('Percantik deskripsi untuk $_selectedPlatform'),
-                onCopyPressed: () => _showSnack('Teks siap disalin'),
-              ),
             ],
           ),
         ),
