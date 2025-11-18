@@ -18,7 +18,9 @@ class TemplateSocialMediaPage extends StatefulWidget {
 class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
   final List<String> _platforms = const ['Tiktok', 'Instagram', 'YouTube'];
   late String _selectedPlatform;
-  late final TextEditingController _copyController;
+  late final TextEditingController _productNameController;
+  late final TextEditingController _productTypeController;
+  late final TextEditingController _productSpecialController;
   final AiImageService _aiImageService = AiImageService();
   final ImagePicker _imagePicker = ImagePicker();
   Uint8List? _selectedImageBytes;
@@ -30,16 +32,22 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
   void initState() {
     super.initState();
     _selectedPlatform = _platforms[1];
-    _copyController = TextEditingController(
-      text: 'Keripik Pisang Premium gurih, renyah, dan tidak bikin enek! Cocok '
-          'untuk teman ngopi, nonton, atau hadiah kecil buat orang tersayang. '
-          'Yuk cobain sekarang! Stok terbatas ❤️🔥',
+    _productNameController = TextEditingController(
+      text: 'Keripik Pisang Laris',
+    );
+    _productTypeController = TextEditingController(
+      text: 'Snack premium tanpa bahan pengawet',
+    );
+    _productSpecialController = TextEditingController(
+      text: 'Renyah, tidak berminyak, tersedia varian rasa favorit.',
     );
   }
 
   @override
   void dispose() {
-    _copyController.dispose();
+    _productNameController.dispose();
+    _productTypeController.dispose();
+    _productSpecialController.dispose();
     _aiImageService.dispose();
     super.dispose();
   }
@@ -202,7 +210,9 @@ class _TemplateSocialMediaPageState extends State<TemplateSocialMediaPage> {
               CopyWritingSection(
                 platforms: _platforms,
                 selectedPlatform: _selectedPlatform,
-                copyController: _copyController,
+                productNameController: _productNameController,
+                productTypeController: _productTypeController,
+                productSpecialController: _productSpecialController,
                 onPlatformChanged: (platform) {
                   setState(() {
                     _selectedPlatform = platform;

@@ -7,7 +7,9 @@ class CopyWritingSection extends StatelessWidget {
     super.key,
     required this.platforms,
     required this.selectedPlatform,
-    required this.copyController,
+    required this.productNameController,
+    required this.productTypeController,
+    required this.productSpecialController,
     required this.onPlatformChanged,
     required this.onBeautifyPressed,
     required this.onCopyPressed,
@@ -15,7 +17,9 @@ class CopyWritingSection extends StatelessWidget {
 
   final List<String> platforms;
   final String selectedPlatform;
-  final TextEditingController copyController;
+  final TextEditingController productNameController;
+  final TextEditingController productTypeController;
+  final TextEditingController productSpecialController;
   final ValueChanged<String> onPlatformChanged;
   final VoidCallback onBeautifyPressed;
   final VoidCallback onCopyPressed;
@@ -72,17 +76,51 @@ class CopyWritingSection extends StatelessWidget {
                 .toList(),
           ),
           const SizedBox(height: 18),
+          _buildFieldLabel(
+            theme,
+            label: 'Nama Produk',
+            required: true,
+          ),
+          const SizedBox(height: 6),
           TextField(
-            controller: copyController,
-            maxLines: 6,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: AppColors.primary05,
-              alignLabelWithHint: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: AppColors.primary20),
-              ),
+            controller: productNameController,
+            textInputAction: TextInputAction.next,
+            decoration: _inputDecoration(
+              hint: 'Contoh: Keripik Pisang Laris',
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildFieldLabel(
+            theme,
+            label: 'Jenis Produk',
+            required: true,
+          ),
+          const SizedBox(height: 6),
+          TextField(
+            controller: productTypeController,
+            textInputAction: TextInputAction.next,
+            decoration: _inputDecoration(
+              hint: 'Contoh: Snack premium tanpa pengawet',
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildFieldLabel(
+            theme,
+            label: 'Ciri Khusus Produk',
+          ),
+          const SizedBox(height: 6),
+          TextField(
+            controller: productSpecialController,
+            maxLines: 3,
+            decoration: _inputDecoration(
+              hint: 'Contoh: Renyah, tidak berminyak, banyak varian rasa',
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Nama produk dan jenis produk wajib diisi sebelum meneruskan ke AI.',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: AppColors.primary60,
             ),
           ),
           const SizedBox(height: 12),
@@ -124,6 +162,54 @@ class CopyWritingSection extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFieldLabel(
+    ThemeData theme, {
+    required String label,
+    bool required = false,
+  }) {
+    return RichText(
+      text: TextSpan(
+        text: label,
+        style: theme.textTheme.labelLarge?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: AppColors.primary,
+        ),
+        children: required
+            ? [
+                TextSpan(
+                  text: ' *',
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: Colors.redAccent,
+                  ),
+                ),
+              ]
+            : null,
+      ),
+    );
+  }
+
+  InputDecoration _inputDecoration({required String hint}) {
+    return InputDecoration(
+      hintText: hint,
+      filled: true,
+      fillColor: AppColors.primary05,
+      alignLabelWithHint: true,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AppColors.primary20),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AppColors.primary20),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AppColors.primary40),
       ),
     );
   }
