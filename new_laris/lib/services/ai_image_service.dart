@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:universal_io/io.dart' as io;
 
@@ -26,6 +27,7 @@ class AiImageService {
     'GEMINI_API_KEY',
     defaultValue: '',
   );
+  static const String _galleryAlbumName = 'Laris AI';
   static const String _defaultPrompt = '''
 Tingkatkan kualitas visual foto produk e-commerce berikut :
 1. Pertahankan bentuk produk jangan merubah apapun yang ada dalam produk seperti bentuk , warna, merk, dan lainnya
@@ -114,11 +116,37 @@ Tingkatkan kualitas visual foto produk e-commerce berikut :
       return resolvedName;
     }
 
+    if (_supportsGallerySaver) {
+      return _saveToGallery(bytes, resolvedName);
+    }
+
     final targetDir = await _resolveDownloadDirectory();
     final file = io.File('${targetDir.path}${io.Platform.pathSeparator}$resolvedName');
     await file.create(recursive: true);
     await file.writeAsBytes(bytes, flush: true);
     return file.path;
+  }
+
+  bool get _supportsGallerySaver =>
+      !kIsWeb && (io.Platform.isAndroid || io.Platform.isIOS);
+
+  Future<String> _saveToGallery(Uint8List bytes, String resolvedName) async {
+    final tempDir = await getTemporaryDirectory();
+    final tempPath =
+        '${tempDir.path}${io.Platform.pathSeparator}${DateTime.now().millisecondsSinceEpoch}_$resolvedName';
+    final tempFile = io.File(tempPath);
+    await tempFile.writeAsBytes(bytes, flush: true);
+    final saved = await GallerySaver.saveImage(
+      tempFile.path,
+      albumName: _galleryAlbumName,
+    );
+    await tempFile.delete().catchError((_) {});
+    if (saved == true) {
+      return 'Galeri (album $_galleryAlbumName)';
+    }
+    throw const AiImageServiceException(
+      'Gagal menyimpan gambar ke galeri. Pastikan izin penyimpanan diberikan.',
+    );
   }
 
   Future<http.Response> _sendRequest(Map<String, Object?> payload) async {

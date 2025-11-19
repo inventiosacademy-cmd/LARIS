@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:universal_io/io.dart' as io;
 
@@ -25,6 +26,7 @@ class AiLogoService {
     'GEMINI_API_KEY',
     defaultValue: '',
   );
+  static const String _galleryAlbumName = 'Laris AI';
 
   final http.Client _client;
   final String _apiKey;
@@ -130,6 +132,10 @@ class AiLogoService {
       return resolvedName;
     }
 
+    if (_supportsGallerySaver) {
+      return _saveLogoToGallery(bytes, resolvedName);
+    }
+
     final directory = await _resolveDownloadDirectory();
     final targetPath =
         '${directory.path}${io.Platform.pathSeparator}$resolvedName';
@@ -137,6 +143,28 @@ class AiLogoService {
     await file.create(recursive: true);
     await file.writeAsBytes(bytes, flush: true);
     return file.path;
+  }
+
+  bool get _supportsGallerySaver =>
+      !kIsWeb && (io.Platform.isAndroid || io.Platform.isIOS);
+
+  Future<String> _saveLogoToGallery(Uint8List bytes, String fileName) async {
+    final tempDir = await getTemporaryDirectory();
+    final tempPath =
+        '${tempDir.path}${io.Platform.pathSeparator}${DateTime.now().millisecondsSinceEpoch}_$fileName';
+    final tempFile = io.File(tempPath);
+    await tempFile.writeAsBytes(bytes, flush: true);
+    final saved = await GallerySaver.saveImage(
+      tempFile.path,
+      albumName: _galleryAlbumName,
+    );
+    await tempFile.delete().catchError((_) {});
+    if (saved == true) {
+      return 'Galeri (album $_galleryAlbumName)';
+    }
+    throw const AiLogoServiceException(
+      'Gagal menyimpan logo ke galeri. Pastikan aplikasi memiliki izin penyimpanan.',
+    );
   }
 
   String _composePrompt({
