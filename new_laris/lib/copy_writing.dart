@@ -12,17 +12,18 @@ class CopyWritingPage extends StatefulWidget {
 }
 
 class _CopyWritingPageState extends State<CopyWritingPage> {
-  final List<String> _platforms = const [
-    'Instagram',
-    'TikTok Shop',
-    'Shopee Live',
-    'WhatsApp Broadcast',
-    'Marketplace',
+  final List<AiCopywritingPreset> _platforms = const [
+    AiCopywritingPreset.tiktok,
+    AiCopywritingPreset.instagram,
+    AiCopywritingPreset.facebook,
+    AiCopywritingPreset.tokopedia,
+    AiCopywritingPreset.shopee,
   ];
-  late String _selectedPlatform;
+  late AiCopywritingPreset _selectedPlatform;
 
   final TextEditingController _productNameController = TextEditingController();
   final TextEditingController _productTypeController = TextEditingController();
+  final TextEditingController _taglineController = TextEditingController();
   final TextEditingController _productSpecialController =
       TextEditingController();
   final TextEditingController _productLinkController = TextEditingController();
@@ -44,6 +45,7 @@ class _CopyWritingPageState extends State<CopyWritingPage> {
   void dispose() {
     _productNameController.dispose();
     _productTypeController.dispose();
+    _taglineController.dispose();
     _productSpecialController.dispose();
     _productLinkController.dispose();
     _contactNumberController.dispose();
@@ -51,7 +53,7 @@ class _CopyWritingPageState extends State<CopyWritingPage> {
     super.dispose();
   }
 
-  void _onPlatformChanged(String platform) {
+  void _onPlatformChanged(AiCopywritingPreset platform) {
     if (_selectedPlatform == platform) {
       return;
     }
@@ -65,11 +67,12 @@ class _CopyWritingPageState extends State<CopyWritingPage> {
     final productName = _productNameController.text.trim();
     final productType = _productTypeController.text.trim();
     final productSpecial = _productSpecialController.text.trim();
+    final tagline = _taglineController.text.trim();
     final productLink = _productLinkController.text.trim();
     final contactNumber = _contactNumberController.text.trim();
 
     if (productName.isEmpty || productType.isEmpty) {
-      _showSnack('Nama dan jenis produk wajib diisi.');
+      _showSnack('Nama brand dan jenis produk wajib diisi.');
       return;
     }
 
@@ -82,6 +85,7 @@ class _CopyWritingPageState extends State<CopyWritingPage> {
         name: productName,
         type: productType,
         special: productSpecial,
+        tagline: tagline,
         productLink: productLink,
         contactNumber: contactNumber,
       );
@@ -124,57 +128,46 @@ class _CopyWritingPageState extends State<CopyWritingPage> {
     required String name,
     required String type,
     required String special,
+    required String tagline,
     required String productLink,
     required String contactNumber,
   }) {
-    final tone = _platformGuideline(_selectedPlatform);
-    final buffer = StringBuffer()
-      ..writeln(
-          'Kamu adalah copywriter profesional untuk UMKM kuliner Indonesia.')
-      ..writeln(
-          'Tulis satu copywriting ${_selectedPlatform.toLowerCase()} yang persuasif dan siap posting.')
-      ..writeln('Nama produk: $name')
-      ..writeln('Jenis produk: $type');
-
-    if (special.isNotEmpty) {
-      buffer.writeln('Ciri khusus produk: $special');
-    }
-    if (productLink.isNotEmpty) {
-      buffer.writeln('Link produk atau katalog: $productLink');
-    }
-    if (contactNumber.isNotEmpty) {
-      buffer.writeln('Kontak/WhatsApp pemesanan: $contactNumber');
-    }
-
-    buffer
-      ..writeln('Gaya bahasa: $tone')
-      ..writeln(
-          'Gunakan Bahasa Indonesia natural, maksimal tiga paragraf pendek.')
-      ..writeln(
-          'Tambahkan ajakan bertindak yang kuat dan 3-5 hashtag relevan di akhir.');
-    if (productLink.isNotEmpty || contactNumber.isNotEmpty) {
-      buffer.writeln(
-        'Pastikan CTA mengarahkan ke link/kontak tersebut agar pembaca tahu cara order.',
-      );
-    }
-
-    return buffer.toString();
+    final summary = _composeThemeSummary(
+      name: name,
+      type: type,
+      special: special,
+      tagline: tagline,
+      productLink: productLink,
+      contactNumber: contactNumber,
+    );
+    final template = _selectedPlatform.promptTemplate;
+    return template.replaceAll('[ISI TEMAMU]', summary);
   }
 
-  String _platformGuideline(String platform) {
-    switch (platform) {
-      case 'Instagram':
-        return 'Storytelling estetik, gunakan emoji secukupnya, akhiri dengan CTA seperti "cek link di bio" atau "tap buat lihat katalog".';
-      case 'TikTok Shop':
-        return 'Hook kuat di 2 detik pertama, kalimat pendek penuh energi, sertakan CTA "checkout sekarang" dan highlight stok terbatas.';
-      case 'Shopee Live':
-        return 'Gunakan bahasa percakapan layaknya host live, sebut promo dan bonus, akhiri dengan CTA "serbu sekarang sebelum habis".';
-      case 'WhatsApp Broadcast':
-        return 'Bahasa personal, hangat, beri sapaan singkat, tawarkan promo terbatas dan ajak balas chat untuk order.';
-      case 'Marketplace':
-      default:
-        return 'Tekankan manfaat dan detail produk, sertakan bukti sosial singkat, sebut harga atau bonus, tutup dengan CTA "beli sekarang".';
+  String _composeThemeSummary({
+    required String name,
+    required String type,
+    required String special,
+    required String tagline,
+    required String productLink,
+    required String contactNumber,
+  }) {
+    final parts = <String>[
+      'Brand $name dengan jenis produk $type',
+    ];
+    if (tagline.isNotEmpty) {
+      parts.add('Tagline: "$tagline"');
     }
+    if (special.isNotEmpty) {
+      parts.add('Keunggulan utama: $special');
+    }
+    if (productLink.isNotEmpty) {
+      parts.add('Link pembelian: $productLink');
+    }
+    if (contactNumber.isNotEmpty) {
+      parts.add('Kontak/WhatsApp: $contactNumber');
+    }
+    return parts.join('. ');
   }
 
   @override
@@ -212,15 +205,16 @@ class _CopyWritingPageState extends State<CopyWritingPage> {
                 selectedPlatform: _selectedPlatform,
                 productNameController: _productNameController,
                 productTypeController: _productTypeController,
+                taglineController: _taglineController,
                 productSpecialController: _productSpecialController,
-              productLinkController: _productLinkController,
-              contactNumberController: _contactNumberController,
-              onPlatformChanged: _onPlatformChanged,
-              onBeautifyPressed: _onBeautifyPressed,
-              onCopyPressed: _onCopyPressed,
-              hasResult:
-                  _generatedCopy != null && _generatedCopy!.trim().isNotEmpty,
-            ),
+                productLinkController: _productLinkController,
+                contactNumberController: _contactNumberController,
+                onPlatformChanged: _onPlatformChanged,
+                onBeautifyPressed: _onBeautifyPressed,
+                onCopyPressed: _onCopyPressed,
+                hasResult:
+                    _generatedCopy != null && _generatedCopy!.trim().isNotEmpty,
+              ),
               const SizedBox(height: 20),
               _CopywritingPreviewCard(
                 platform: _selectedPlatform,
@@ -242,7 +236,7 @@ class _CopywritingPreviewCard extends StatelessWidget {
     required this.text,
   });
 
-  final String platform;
+  final AiCopywritingPreset platform;
   final bool isLoading;
   final String? text;
 
@@ -297,6 +291,7 @@ class CopyWritingSection extends StatelessWidget {
     required this.selectedPlatform,
     required this.productNameController,
     required this.productTypeController,
+    required this.taglineController,
     required this.productSpecialController,
     required this.productLinkController,
     required this.contactNumberController,
@@ -306,14 +301,15 @@ class CopyWritingSection extends StatelessWidget {
     required this.hasResult,
   });
 
-  final List<String> platforms;
-  final String selectedPlatform;
+  final List<AiCopywritingPreset> platforms;
+  final AiCopywritingPreset selectedPlatform;
   final TextEditingController productNameController;
   final TextEditingController productTypeController;
+  final TextEditingController taglineController;
   final TextEditingController productSpecialController;
   final TextEditingController productLinkController;
   final TextEditingController contactNumberController;
-  final ValueChanged<String> onPlatformChanged;
+  final ValueChanged<AiCopywritingPreset> onPlatformChanged;
   final VoidCallback onBeautifyPressed;
   final VoidCallback onCopyPressed;
   final bool hasResult;
@@ -326,7 +322,7 @@ class CopyWritingSection extends StatelessWidget {
       children: [
         _buildFieldLabel(
           theme,
-          label: 'Nama Produk',
+          label: 'Nama Brand',
           required: true,
         ),
         const SizedBox(height: 6),
@@ -334,7 +330,7 @@ class CopyWritingSection extends StatelessWidget {
           controller: productNameController,
           textInputAction: TextInputAction.next,
           decoration: _inputDecoration(
-            hint: 'Contoh: Keripik Pisang Laris',
+            hint: 'Contoh: Laris Snack House',
           ),
         ),
         const SizedBox(height: 16),
@@ -349,6 +345,19 @@ class CopyWritingSection extends StatelessWidget {
           textInputAction: TextInputAction.next,
           decoration: _inputDecoration(
             hint: 'Contoh: Snack premium tanpa pengawet',
+          ),
+        ),
+        const SizedBox(height: 16),
+        _buildFieldLabel(
+          theme,
+          label: 'Tagline Brand / Produk',
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          controller: taglineController,
+          textInputAction: TextInputAction.next,
+          decoration: _inputDecoration(
+            hint: 'Contoh: "Gurihnya bikin nagih setiap gigitan"',
           ),
         ),
         const SizedBox(height: 16),
@@ -398,14 +407,14 @@ class CopyWritingSection extends StatelessWidget {
           label: 'Copywriting untuk apa?',
         ),
         const SizedBox(height: 6),
-        DropdownButtonFormField<String>(
+        DropdownButtonFormField<AiCopywritingPreset>(
           value: selectedPlatform,
           decoration: _inputDecoration(hint: 'Pilih platform tujuan'),
           items: platforms
               .map(
-                (platform) => DropdownMenuItem(
+                (platform) => DropdownMenuItem<AiCopywritingPreset>(
                   value: platform,
-                  child: Text(platform),
+                  child: Text(platform.shortLabel),
                 ),
               )
               .toList(),

@@ -367,7 +367,7 @@ class _CopywritingResultCard extends StatelessWidget {
   }
 }
 
-enum AiCopywritingPreset { tiktok, instagram, facebook }
+enum AiCopywritingPreset { tiktok, instagram, facebook, tokopedia, shopee }
 
 extension AiCopywritingPresetX on AiCopywritingPreset {
   String get title {
@@ -378,6 +378,10 @@ extension AiCopywritingPresetX on AiCopywritingPreset {
         return 'Copywriting Instagram';
       case AiCopywritingPreset.facebook:
         return 'Copywriting Facebook';
+      case AiCopywritingPreset.tokopedia:
+        return 'Copywriting Tokopedia';
+      case AiCopywritingPreset.shopee:
+        return 'Copywriting Shopee';
     }
   }
 
@@ -389,6 +393,10 @@ extension AiCopywritingPresetX on AiCopywritingPreset {
         return 'Instagram';
       case AiCopywritingPreset.facebook:
         return 'Facebook';
+      case AiCopywritingPreset.tokopedia:
+        return 'Tokopedia';
+      case AiCopywritingPreset.shopee:
+        return 'Shopee';
     }
   }
 
@@ -400,6 +408,10 @@ extension AiCopywritingPresetX on AiCopywritingPreset {
         return Icons.photo_camera_rounded;
       case AiCopywritingPreset.facebook:
         return Icons.facebook_rounded;
+      case AiCopywritingPreset.tokopedia:
+        return Icons.storefront_rounded;
+      case AiCopywritingPreset.shopee:
+        return Icons.local_mall_rounded;
     }
   }
 
@@ -411,6 +423,10 @@ extension AiCopywritingPresetX on AiCopywritingPreset {
         return 'Storytelling estetik, emosional, dan brandable';
       case AiCopywritingPreset.facebook:
         return 'Lebih panjang, informatif, dan meyakinkan';
+      case AiCopywritingPreset.tokopedia:
+        return 'Nada sopan, edukatif, dan menonjolkan kepercayaan';
+      case AiCopywritingPreset.shopee:
+        return 'Hard selling ala flash sale, penuh urgensi';
     }
   }
 
@@ -429,6 +445,16 @@ extension AiCopywritingPresetX on AiCopywritingPreset {
       case AiCopywritingPreset.facebook:
         return '''
 1. Buatkan copywriting Facebook yang lebih panjang, informatif, dan persuasive. Gunakan bahasa yang sopan, jelas, dan mudah dipahami oleh audiens dewasa. Sertakan manfaat utama, alasan rasional, serta ajakan bertindak yang kuat seperti "pelajari lebih lanjut", "hubungi kami", atau "klik link ini". Tambahkan 5–8 hashtag relevan yang tidak harus viral tetapi spesifik. Tema: [ISI TEMAMU].
+2. langsung ke hasil dari poin 1 tanpa penjelasan apa pun.
+''';
+      case AiCopywritingPreset.tokopedia:
+        return '''
+1. Buatkan copywriting gaya Tokopedia yang informatif, ramah, dan meyakinkan. Gunakan bahasa sopan nan terpercaya dengan fokus pada kualitas produk. Jelaskan keunggulan, manfaat utama, dan edukasi singkat yang membuat pembeli yakin sebelum order. Akhiri dengan ajakan bertindak halus namun jelas. Tambahkan 3–5 hashtag relevan. Tema: [ISI TEMAMU].
+2. langsung ke hasil dari poin 1 tanpa penjelasan apa pun.
+''';
+      case AiCopywritingPreset.shopee:
+        return '''
+1. Buatkan copywriting gaya Shopee yang menonjolkan harga murah, potongan besar, dan urgensi tinggi. Gunakan kalimat heboh penuh energi, sertakan kata seperti "diskon", "murah banget", "cek out sekarang", dan "stok terbatas". Tambahkan emoji seperlunya untuk menambah hype. Tutup dengan CTA kuat dan 5–7 hashtag bertema belanja hemat serta produk. Tema: [ISI TEMAMU].
 2. langsung ke hasil dari poin 1 tanpa penjelasan apa pun.
 ''';
     }
