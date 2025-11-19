@@ -434,28 +434,23 @@ extension AiCopywritingPresetX on AiCopywritingPreset {
     switch (this) {
       case AiCopywritingPreset.tiktok:
         return '''
-1. Buatkan copywriting bergaya TikTok yang sangat singkat, enerjik, dan punya hook kuat di 2 detik pertama. Gunakan bahasa yang santai, mudah diingat, dan relevan untuk Gen Z. Sertakan ajakan interaksi seperti "komen", "like", atau "cek link di bio". Tulis dengan format ringkas, maksimal 2–3 kalimat. Tambahkan 5–10 hashtag pendek dan viral. Tema: [ISI TEMAMU].
-2. langsung ke hasil dari poin 1 tanpa penjelasan apa pun.
+1. Buatkan copywriting bergaya TikTok yang sangat singkat, enerjik, dan punya hook kuat di 2 detik pertama. Gunakan bahasa yang santai, mudah diingat, dan relevan untuk Gen Z. Sertakan ajakan interaksi seperti "komen", "like", atau "cek link di bio". Tulis dengan format ringkas, maksimal 2–3 kalimat. Tambahkan 5–10 hashtag pendek dan viral. Tema: [ISI TEMAMU].output langsung berupa hasil dari point 1 tanpa penjelasan apa pun.
 ''';
       case AiCopywritingPreset.instagram:
         return '''
-1. Buatkan copywriting Instagram yang estetik dan memiliki sentuhan storytelling. Gunakan bahasa yang elegan, penuh emosi positif, dan membangun brand image yang kuat. Formatkan dalam paragraf singkat, lalu berikan call to action seperti "swipe", "save", atau "share". Tambahkan 8–12 hashtag yang relevan dan trending namun tetap niche. Tema: [ISI TEMAMU].
-2. langsung ke hasil dari poin 1 tanpa penjelasan apa pun.
+1. Buatkan copywriting Instagram yang estetik dan memiliki sentuhan storytelling. Gunakan bahasa yang elegan, penuh emosi positif, dan membangun brand image yang kuat. Formatkan dalam paragraf singkat, lalu berikan call to action seperti "swipe", "save", atau "share". Tambahkan 8–12 hashtag yang relevan dan trending namun tetap niche. Tema: [ISI TEMAMU].output langsung berupa hasil dari point 1 tanpa penjelasan apa pun.
 ''';
       case AiCopywritingPreset.facebook:
         return '''
-1. Buatkan copywriting Facebook yang lebih panjang, informatif, dan persuasive. Gunakan bahasa yang sopan, jelas, dan mudah dipahami oleh audiens dewasa. Sertakan manfaat utama, alasan rasional, serta ajakan bertindak yang kuat seperti "pelajari lebih lanjut", "hubungi kami", atau "klik link ini". Tambahkan 5–8 hashtag relevan yang tidak harus viral tetapi spesifik. Tema: [ISI TEMAMU].
-2. langsung ke hasil dari poin 1 tanpa penjelasan apa pun.
+1. Buatkan copywriting Facebook yang lebih panjang, informatif, dan persuasive. Gunakan bahasa yang sopan, jelas, dan mudah dipahami oleh audiens dewasa. Sertakan manfaat utama, alasan rasional, serta ajakan bertindak yang kuat seperti "pelajari lebih lanjut", "hubungi kami", atau "klik link ini". Tambahkan 5–8 hashtag relevan yang tidak harus viral tetapi spesifik. Tema: [ISI TEMAMU].output langsung berupa hasil dari point 1 tanpa penjelasan apa pun.
 ''';
       case AiCopywritingPreset.tokopedia:
         return '''
-1. Buatkan copywriting gaya Tokopedia yang informatif, ramah, dan meyakinkan. Gunakan bahasa sopan nan terpercaya dengan fokus pada kualitas produk. Jelaskan keunggulan, manfaat utama, dan edukasi singkat yang membuat pembeli yakin sebelum order. Akhiri dengan ajakan bertindak halus namun jelas. Tambahkan 3–5 hashtag relevan. Tema: [ISI TEMAMU].
-2. langsung ke hasil dari poin 1 tanpa penjelasan apa pun.
+1. Buatkan copywriting gaya Tokopedia yang informatif, ramah, dan meyakinkan. Gunakan bahasa sopan nan terpercaya dengan fokus pada kualitas produk. Jelaskan keunggulan, manfaat utama, dan edukasi singkat yang membuat pembeli yakin sebelum order. Akhiri dengan ajakan bertindak halus namun jelas. Tambahkan 3–5 hashtag relevan. Tema: [ISI TEMAMU].output langsung berupa hasil dari point 1 tanpa penjelasan apa pun.
 ''';
       case AiCopywritingPreset.shopee:
         return '''
-1. Buatkan copywriting gaya Shopee yang menonjolkan harga murah, potongan besar, dan urgensi tinggi. Gunakan kalimat heboh penuh energi, sertakan kata seperti "diskon", "murah banget", "cek out sekarang", dan "stok terbatas". Tambahkan emoji seperlunya untuk menambah hype. Tutup dengan CTA kuat dan 5–7 hashtag bertema belanja hemat serta produk. Tema: [ISI TEMAMU].
-2. langsung ke hasil dari poin 1 tanpa penjelasan apa pun.
+1. Buatkan copywriting gaya Shopee yang menonjolkan harga murah, potongan besar, dan urgensi tinggi. Gunakan kalimat heboh penuh energi, sertakan kata seperti "diskon", "murah banget", "cek out sekarang", dan "stok terbatas". Tambahkan emoji seperlunya untuk menambah hype. Tutup dengan CTA kuat dan 5–7 hashtag bertema belanja hemat serta produk. Tema: [ISI TEMAMU].output langsung berupa hasil dari point 1 tanpa penjelasan apa pun.
 ''';
     }
   }
