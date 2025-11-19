@@ -22,8 +22,10 @@ class AiImageService {
         _timeout = timeout ?? _defaultTimeout;
 
   static const Duration _defaultTimeout = Duration(minutes: 2);
-  static const String _defaultApiKey =
-      'AIzaSyACZ_Q3WAShC9X0lhgVcUlZw_GoNyVdEpA';
+  static const String _envGeminiApiKey = String.fromEnvironment(
+    'GEMINI_API_KEY',
+    defaultValue: '',
+  );
   static const String _defaultPrompt = '''
 Tingkatkan kualitas visual foto produk e-commerce berikut :
 1. Pertahankan bentuk produk jangan merubah apapun yang ada dalam produk seperti bentuk , warna, merk, dan lainnya
@@ -343,18 +345,15 @@ Tingkatkan kualitas visual foto produk e-commerce berikut :
   }
 
   static String _resolveApiKey(String? provided) {
-    final envKey = const String.fromEnvironment('GEMINI_API_KEY');
     final candidate =
-        (provided?.trim().isNotEmpty ?? false) ? provided!.trim() : envKey;
+        (provided?.trim().isNotEmpty ?? false) ? provided!.trim() : _envGeminiApiKey;
     if (candidate.isNotEmpty) {
       return candidate;
     }
-    if (_defaultApiKey.isEmpty) {
-      throw const AiImageServiceException(
-        'Gemini API key belum dikonfigurasi. Setel GEMINI_API_KEY atau apiKey.',
-      );
-    }
-    return _defaultApiKey;
+    throw const AiImageServiceException(
+      'Gemini API key belum dikonfigurasi. Tambahkan --dart-define=GEMINI_API_KEY=YOUR_KEY '
+      'saat build/run atau berikan langsung ke AiImageService.',
+    );
   }
 
   static String _resolveModel(String? provided) {

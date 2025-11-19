@@ -447,8 +447,10 @@ class AiCopywritingService {
         _timeout = timeout ?? _defaultTimeout;
 
   static const Duration _defaultTimeout = Duration(seconds: 45);
-  static const String _defaultApiKey =
-      'AIzaSyACZ_Q3WAShC9X0lhgVcUlZw_GoNyVdEpA';
+  static const String _envGeminiApiKey = String.fromEnvironment(
+    'GEMINI_API_KEY',
+    defaultValue: '',
+  );
 
   final http.Client _client;
   final String _apiKey;
@@ -573,12 +575,13 @@ class AiCopywritingService {
     if (candidate.isNotEmpty) {
       return candidate;
     }
-    if (_defaultApiKey.isEmpty) {
-      throw const AiCopywritingServiceException(
-        'API key Gemini tidak ditentukan.',
-      );
+    if (_envGeminiApiKey.isNotEmpty) {
+      return _envGeminiApiKey;
     }
-    return _defaultApiKey;
+    throw const AiCopywritingServiceException(
+      'API key Gemini tidak ditentukan. Tambahkan --dart-define=GEMINI_API_KEY=YOUR_KEY '
+      'saat build/run atau berikan langsung ke AiCopywritingService.',
+    );
   }
 
   void dispose() {

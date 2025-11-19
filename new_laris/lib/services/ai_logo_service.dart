@@ -21,8 +21,10 @@ class AiLogoService {
         _timeout = timeout ?? _defaultTimeout;
 
   static const Duration _defaultTimeout = Duration(minutes: 2);
-  static const String _defaultApiKey =
-      'AIzaSyACZ_Q3WAShC9X0lhgVcUlZw_GoNyVdEpA';
+  static const String _envGeminiApiKey = String.fromEnvironment(
+    'GEMINI_API_KEY',
+    defaultValue: '',
+  );
 
   final http.Client _client;
   final String _apiKey;
@@ -288,12 +290,13 @@ class AiLogoService {
     if (candidate.isNotEmpty) {
       return candidate;
     }
-    if (_defaultApiKey.isEmpty) {
-      throw const AiLogoServiceException(
-        'API key Gemini tidak disediakan untuk logo.',
-      );
+    if (_envGeminiApiKey.isNotEmpty) {
+      return _envGeminiApiKey;
     }
-    return _defaultApiKey;
+    throw const AiLogoServiceException(
+      'API key Gemini tidak disediakan. Tambahkan --dart-define=GEMINI_API_KEY=YOUR_KEY '
+      'saat build/run atau berikan langsung ke AiLogoService.',
+    );
   }
 
   Future<io.Directory> _resolveDownloadDirectory() async {
