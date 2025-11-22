@@ -4,6 +4,7 @@ import 'app_colors.dart';
 import 'copy_writing.dart';
 import 'foto_produk.dart';
 import 'generate_logo.dart';
+import 'generate_poster.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,6 +15,13 @@ class HomePage extends StatefulWidget {
       title: 'Foto Produk',
       icon: Icons.grid_view_rounded,
       assetIcon: 'assets/meningkatkan_produk.png',
+      backgroundColor: AppColors.neutral95,
+      iconColor: AppColors.primary,
+    ),
+    _FeatureItem(
+      id: 'poster',
+      title: 'Poster Grafis',
+      icon: Icons.image_outlined,
       backgroundColor: AppColors.neutral95,
       iconColor: AppColors.primary,
     ),
@@ -138,6 +146,11 @@ class _HomePageState extends State<HomePage> {
       case 'logo':
         Navigator.of(context).push(
           MaterialPageRoute(builder: (_) => const GenerateLogoPage()),
+        );
+        break;
+      case 'poster':
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const GeneratePosterPage()),
         );
         break;
       default:
