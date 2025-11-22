@@ -16,10 +16,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  static const _googleServerClientId =
+      '659142019462-cmdhfchvgss5pk6k12aabfknia6n78f6.apps.googleusercontent.com';
+
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _googleSignIn = GoogleSignIn();
+  final _googleSignIn =
+      GoogleSignIn(serverClientId: _googleServerClientId);
   bool _obscurePassword = true;
   bool _rememberMe = false;
   bool _isSubmitting = false;
