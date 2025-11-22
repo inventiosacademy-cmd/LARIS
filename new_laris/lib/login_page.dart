@@ -107,10 +107,11 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         _authError = 'Google sign-in gagal (${error.message ?? error.code}).';
       });
-    } catch (_) {
+    } catch (error, stackTrace) {
+      debugPrint('Google sign-in unexpected error: $error\n$stackTrace');
       if (!mounted) return;
       setState(() {
-        _authError = 'Tidak dapat masuk dengan Google. Coba lagi.';
+        _authError = 'Tidak dapat masuk dengan Google. (${error.runtimeType})';
       });
     } finally {
       if (mounted) {
