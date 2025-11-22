@@ -31,6 +31,14 @@
           }
         },
         {
+          "client_id": "659142019462-s6efuq424a2go3ivgspmg34uh5i2ntvf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.new_laris",
+            "certificate_hash": "5b8d6153f47f96b8454d8574a1936da08d69163d"
+          }
+        },
+        {
           "client_id": "659142019462-cmdhfchvgss5pk6k12aabfknia6n78f6.apps.googleusercontent.com",
           "client_type": 3
         }
