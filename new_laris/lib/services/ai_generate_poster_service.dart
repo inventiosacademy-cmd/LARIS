@@ -267,7 +267,7 @@ class AiGeneratePosterService {
         'Buat grafik desain poster marketing profesional dengan ketentuan berikut:',
       )
       ..writeln(
-        '1. Jika foto yang diunggah kurang jelas atau blur, otomatis perindah dengan penyesuaian pencahayaan, pengurangan noise, peningkatan kontras, dan penajaman sehingga produk tampak bersih dan menarik.',
+        '1. Jika foto yang diunggah kurang jelas atau blur, otomatis perindah dengan penyesuaian pencahayaan, pengurangan noise, peningkatan kontras, dan penajaman sehingga produk tampak bersih dan menarik.juga pertahankan gambar asli tanpa perubahan besar pada warna atau detail.',
       )
       ..writeln(
         '2. Susun tata letak modern dan elegan seperti poster promosi profesional dengan fokus utama pada produk, tipografi premium, dan komposisi rapi bernuansa studio katalog.',
