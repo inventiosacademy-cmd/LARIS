@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -102,17 +103,40 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute(builder: (_) => const HomePage()),
         (route) => false,
       );
-    } on FirebaseAuthException catch (error) {
+    } on PlatformException catch (error, stackTrace) {
+      debugPrint(
+        'Google sign-in PlatformException: '
+        'code=${error.code}, message=${error.message}, details=${error.details}\n$stackTrace',
+      );
+      if (!mounted) return;
+      final message = [
+        'Login Google gagal (${error.code}).',
+        if (error.message != null && error.message!.isNotEmpty)
+          error.message!,
+      ].join(' ');
+      setState(() {
+        _authError = message;
+      });
+      _showErrorSnack(message);
+    } on FirebaseAuthException catch (error, stackTrace) {
+      debugPrint(
+        'FirebaseAuthException during Google sign-in: '
+        'code=${error.code}, message=${error.message}\n$stackTrace',
+      );
       if (!mounted) return;
       setState(() {
         _authError = 'Google sign-in gagal (${error.message ?? error.code}).';
       });
+      _showErrorSnack(_authError!);
     } catch (error, stackTrace) {
       debugPrint('Google sign-in unexpected error: $error\n$stackTrace');
       if (!mounted) return;
+      final message =
+          'Tidak dapat masuk dengan Google. (${error.runtimeType})';
       setState(() {
-        _authError = 'Tidak dapat masuk dengan Google. (${error.runtimeType})';
+        _authError = message;
       });
+      _showErrorSnack(message);
     } finally {
       if (mounted) {
         setState(() {
@@ -120,6 +144,12 @@ class _LoginPageState extends State<LoginPage> {
         });
       }
     }
+  }
+
+  void _showErrorSnack(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   Future<void> _submit() async {
