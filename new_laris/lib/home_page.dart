@@ -711,10 +711,214 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: _FooterSectionCard(
-        title: 'Profil',
-        child: _ProfileSection(initialName: friendlyName, initialEmail: email),
+      child: Column(
+        children: [
+          _FooterSectionCard(
+            title: 'Profil',
+            child:
+                _ProfileSection(initialName: friendlyName, initialEmail: email),
+          ),
+          const SizedBox(height: 16),
+          const _FooterSectionCard(
+            title: 'Legal & Lisensi',
+            child: _LegalSection(),
+          ),
+        ],
       ),
+    );
+  }
+}
+
+class _LegalSection extends StatelessWidget {
+  const _LegalSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _LegalTile(
+          icon: Icons.description_outlined,
+          title: 'Lisensi Open Source',
+          subtitle: 'Daftar paket pihak ketiga (Apache/MIT/BSD).',
+          onTap: () => showLicensePage(
+            context: context,
+            applicationName: 'LARIS AI',
+            applicationVersion: '1.0.0',
+            applicationLegalese: 'Hak cipta 2025 • LARIS AI',
+          ),
+        ),
+        const Divider(height: 1),
+        _LegalTile(
+          icon: Icons.balance_outlined,
+          title: 'Ringkasan Legal',
+          subtitle: 'Atribusi lisensi & penggunaan layanan Google/Firebase.',
+          onTap: () => _showLegalSummary(context),
+        ),
+      ],
+    );
+  }
+
+  void _showLegalSummary(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        final theme = Theme.of(context);
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 16,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 44,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 14),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+              Text(
+                'Ringkasan Legal',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: Colors.grey.shade800,
+                ),
+              ),
+              const SizedBox(height: 10),
+              _LegalBullet(
+                icon: Icons.shield_outlined,
+                text:
+                    'Paket pihak ketiga memakai lisensi terbuka (Apache/MIT/BSD) tanpa royalti.',
+              ),
+              const SizedBox(height: 8),
+              _LegalBullet(
+                icon: Icons.file_copy_outlined,
+                text:
+                    'Plugin gallery_saver berada di bawah Apache 2.0; sertakan teks lisensi saat distribusi.',
+              ),
+              const SizedBox(height: 8),
+              _LegalBullet(
+                icon: Icons.cloud_outlined,
+                text:
+                    'Firebase & Google Sign-In mengikuti Terms of Service Google; pastikan kebijakan privasi aplikasi menyebut penggunaan layanan tersebut.',
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  OutlinedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                    ),
+                    child: const Text('Tutup'),
+                  ),
+                  const SizedBox(width: 12),
+                  FilledButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      showLicensePage(
+                        context: context,
+                        applicationName: 'LARIS AI',
+                        applicationVersion: '1.0.0',
+                        applicationLegalese: 'Hak cipta 2025 • LARIS AI',
+                      );
+                    },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                    ),
+                    child: const Text('Lihat Lisensi'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _LegalTile extends StatelessWidget {
+  const _LegalTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: AppColors.primary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Icon(icon, color: AppColors.primary),
+      ),
+      title: Text(
+        title,
+        style: theme.textTheme.titleSmall?.copyWith(
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: Colors.grey.shade600,
+        ),
+      ),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: onTap,
+    );
+  }
+}
+
+class _LegalBullet extends StatelessWidget {
+  const _LegalBullet({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 18, color: AppColors.primary),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            text,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: Colors.grey.shade800,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
