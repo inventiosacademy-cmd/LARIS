@@ -408,7 +408,7 @@ class CopyWritingSection extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         DropdownButtonFormField<AiCopywritingPreset>(
-          value: selectedPlatform,
+          initialValue: selectedPlatform,
           decoration: _inputDecoration(hint: 'Pilih platform tujuan'),
           items: platforms
               .map(

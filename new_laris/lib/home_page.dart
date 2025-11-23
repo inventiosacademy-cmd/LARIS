@@ -5,6 +5,8 @@ import 'copy_writing.dart';
 import 'foto_produk.dart';
 import 'generate_logo.dart';
 import 'generate_poster.dart';
+import 'login_page.dart';
+import 'services/session_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -547,10 +549,12 @@ class _ProfileSection extends StatelessWidget {
   const _ProfileSection({
     required this.initialName,
     required this.initialEmail,
+    required this.onLogout,
   });
 
   final String initialName;
   final String initialEmail;
+  final Future<void> Function() onLogout;
 
   @override
   Widget build(BuildContext context) {
@@ -589,6 +593,23 @@ class _ProfileSection extends StatelessWidget {
               backgroundColor: AppColors.primary,
             ),
             child: const Text('Simpan Profil'),
+          ),
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: onLogout,
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              foregroundColor: Colors.red.shade600,
+              side: BorderSide(color: Colors.red.shade100),
+            ),
+            icon: const Icon(Icons.logout_rounded),
+            label: const Text(
+              'Keluar',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
           ),
         ),
       ],
@@ -673,7 +694,7 @@ class _ToolsPage extends StatelessWidget {
 }
 
 class EventAndClassPage extends StatelessWidget {
-  const EventAndClassPage({required this.eventInfos});
+  const EventAndClassPage({super.key, required this.eventInfos});
 
   final List<_EventInfo> eventInfos;
 
@@ -702,7 +723,7 @@ class EventAndClassPage extends StatelessWidget {
 }
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({required this.friendlyName, required this.email});
+  const ProfilePage({super.key, required this.friendlyName, required this.email});
 
   final String friendlyName;
   final String email;
@@ -715,8 +736,11 @@ class ProfilePage extends StatelessWidget {
         children: [
           _FooterSectionCard(
             title: 'Profil',
-            child:
-                _ProfileSection(initialName: friendlyName, initialEmail: email),
+            child: _ProfileSection(
+              initialName: friendlyName,
+              initialEmail: email,
+              onLogout: () => _logout(context),
+            ),
           ),
           const SizedBox(height: 16),
           const _FooterSectionCard(
@@ -727,6 +751,16 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<void> _logout(BuildContext context) async {
+  await FirebaseAuth.instance.signOut();
+  await SessionPreferences.setRememberMeEnabled(false);
+  if (!context.mounted) return;
+  Navigator.of(context).pushAndRemoveUntil(
+    MaterialPageRoute(builder: (_) => const LoginPage()),
+    (route) => false,
+  );
 }
 
 class _LegalSection extends StatelessWidget {

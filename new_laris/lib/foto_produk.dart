@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:new_laris/copy_writing.dart';
 
 import 'app_colors.dart';
 import 'services/ai_image_service.dart';

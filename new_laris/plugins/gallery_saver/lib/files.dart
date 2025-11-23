@@ -27,16 +27,16 @@ bool isLocalFilePath(String path) {
 
 bool isVideo(String path) {
   bool output = false;
-  videoFormats.forEach((videoFormat) {
+  for (var videoFormat in videoFormats) {
     if (path.toLowerCase().contains(videoFormat)) output = true;
-  });
+  }
   return output;
 }
 
 bool isImage(String path) {
   bool output = false;
-  imageFormats.forEach((imageFormat) {
+  for (var imageFormat in imageFormats) {
     if (path.toLowerCase().contains(imageFormat)) output = true;
-  });
+  }
   return output;
 }

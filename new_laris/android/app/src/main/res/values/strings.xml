@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Laris</string>
+    <!-- Ganti dengan Facebook App ID Anda -->
+    <string name="facebook_app_id">743455418804901</string>
+    <!-- Ganti dengan Facebook Client Token Anda -->
+    <string name="facebook_client_token">R99f6357ac3c96025aff50eda0bf10f4f</string>
+    <!-- Skema login harus diawali fb + APP_ID -->
+    <string name="fb_login_protocol_scheme">fb743455418804901</string>
+</resources>

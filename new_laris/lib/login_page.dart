@@ -7,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'app_colors.dart';
 import 'home_page.dart';
 import 'register_page.dart';
+import 'services/auth_service.dart';
 import 'services/session_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -20,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   static const _googleServerClientId =
       '659142019462-cmdhfchvgss5pk6k12aabfknia6n78f6.apps.googleusercontent.com';
 
+  final _authService = AuthService(FirebaseAuth.instance);
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -29,6 +31,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _rememberMe = false;
   bool _isSubmitting = false;
   bool _isGoogleSubmitting = false;
+  bool _isFacebookSubmitting = false;
   String? _authError;
 
   Color get _primaryColor => AppColors.primary;
@@ -141,6 +144,71 @@ class _LoginPageState extends State<LoginPage> {
       if (mounted) {
         setState(() {
           _isGoogleSubmitting = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _signInWithFacebook() async {
+    if (_isFacebookSubmitting) return;
+
+    setState(() {
+      _isFacebookSubmitting = true;
+      _authError = null;
+    });
+
+    try {
+      await _authService.signInWithFacebook();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Berhasil masuk dengan Facebook.')),
+      );
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const HomePage()),
+        (route) => false,
+      );
+    } on FirebaseAuthException catch (error, stackTrace) {
+      debugPrint(
+        'FirebaseAuthException during Facebook sign-in: '
+        'code=${error.code}, message=${error.message}\n$stackTrace',
+      );
+      if (!mounted) return;
+      setState(() {
+        _authError = switch (error.code) {
+          'facebook-not-available' =>
+              'Login Facebook tidak tersedia di platform ini. Gunakan Android/iOS atau coba metode lain.',
+          _ => 'Facebook sign-in gagal (${error.message ?? error.code}).',
+        };
+      });
+      _showErrorSnack(_authError!);
+    } on PlatformException catch (error, stackTrace) {
+      debugPrint(
+        'Facebook sign-in PlatformException: '
+        'code=${error.code}, message=${error.message}, details=${error.details}\n$stackTrace',
+      );
+      if (!mounted) return;
+      final message = [
+        'Login Facebook gagal (${error.code}).',
+        if (error.message != null && error.message!.isNotEmpty)
+          error.message!,
+      ].join(' ');
+      setState(() {
+        _authError = message;
+      });
+      _showErrorSnack(message);
+    } catch (error, stackTrace) {
+      debugPrint('Facebook sign-in unexpected error: $error\n$stackTrace');
+      if (!mounted) return;
+      final message =
+          'Tidak dapat masuk dengan Facebook. (${error.runtimeType})';
+      setState(() {
+        _authError = message;
+      });
+      _showErrorSnack(message);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isFacebookSubmitting = false;
         });
       }
     }
@@ -358,8 +426,13 @@ class _LoginPageState extends State<LoginPage> {
                           onGoogleTap: _isSubmitting || _isGoogleSubmitting
                               ? null
                               : _signInWithGoogle,
-                          onFacebookTap: null,
+                          onFacebookTap: _isSubmitting ||
+                                  _isGoogleSubmitting ||
+                                  _isFacebookSubmitting
+                              ? null
+                              : _signInWithFacebook,
                           isGoogleLoading: _isGoogleSubmitting,
+                          isFacebookLoading: _isFacebookSubmitting,
                         ),
                         const SizedBox(height: 10),
                         Row(

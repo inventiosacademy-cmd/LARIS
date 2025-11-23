@@ -15,7 +15,7 @@ class GallerySaver {
   static const String pleaseProvidePath = 'Please provide valid file path.';
   static const String fileIsNotVideo = 'File on path is not a video.';
   static const String fileIsNotImage = 'File on path is not an image.';
-  static const MethodChannel _channel = const MethodChannel(channelName);
+  static const MethodChannel _channel = MethodChannel(channelName);
 
   ///saves video from provided temp path and optional album name in gallery
   static Future<bool?> saveVideo(
@@ -79,14 +79,14 @@ class GallerySaver {
       {Map<String, String>? headers}) async {
     print(url);
     print(headers);
-    http.Client _client = new http.Client();
-    var req = await _client.get(Uri.parse(url), headers: headers);
+    http.Client client = http.Client();
+    var req = await client.get(Uri.parse(url), headers: headers);
     if (req.statusCode >= 400) {
       throw HttpException(req.statusCode.toString());
     }
     var bytes = req.bodyBytes;
     String dir = (await getTemporaryDirectory()).path;
-    File file = new File('$dir/${basename(url)}');
+    File file = File('$dir/${basename(url)}');
     await file.writeAsBytes(bytes);
     print('File size:${await file.length()}');
     print(file.path);
